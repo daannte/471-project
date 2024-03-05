@@ -17,6 +17,7 @@ app.use("*", (_, res) => {
 });
 
 // Listen for server
-app.listen(8800, () => {
-  console.log("[Server]: Listening on port 5173!");
+const port = 8080;
+app.listen(port, () => {
+  console.log(`[Server]: Listening on port ${port}!`);
 });
