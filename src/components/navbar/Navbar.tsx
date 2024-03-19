@@ -5,9 +5,11 @@ function Navbar() {
     <nav className="navbar">
       <Link to="/">Home</Link>
       <Link to="/calendar">Calendar</Link>
+      <Link className="navbar__login-text" to="/login">
+        Login
+      </Link>
     </nav>
   );
 }
 
 export default Navbar;
-

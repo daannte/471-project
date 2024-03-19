@@ -21,3 +21,7 @@
   color: #007bff;
   text-decoration: underline;
 }
+
+.navbar__login-text {
+  margin-left: auto;
+}
