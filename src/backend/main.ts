@@ -1,7 +1,7 @@
 import express, { Express } from "express";
 import cors from "cors";
 
-import { fetchUser, test } from "./routes";
+import { users } from "./routes";
 
 // Setup express
 const app: Express = express();
@@ -9,8 +9,7 @@ app.use(cors());
 app.use(express.json());
 
 // Use the routes
-app.use("/api/fetchUser", fetchUser);
-app.use("/api/test", test);
+app.use("/api/users", users);
 
 // For endpoints that don't exist
 app.use("/api/*", (_, res) => {
