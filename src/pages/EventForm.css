@@ -1,0 +1,35 @@
+/* EventForm.css */
+.event-form {
+    border: 1px solid #ccc;
+    padding: 20px;
+    width: 300px; /* Adjust as needed */
+}
+
+.event-form h2 {
+    margin-top: 0;
+}
+
+.event-form label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.event-form input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+}
+
+.event-form button {
+    display: block;
+    width: 100%;
+    padding: 8px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+.event-form button:hover {
+    background-color: #0056b3;
+}

@@ -1,17 +1,24 @@
+// CalendarPage.tsx
 import React, { useState } from 'react';
 import Calendar from 'react-calendar';
-import './CalendarPage.css';
+import EventForm from './EventForm';
+import './CalendarPage.css'; 
 
 function CalendarPage() {
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-    
+    const [events, setEvents] = useState<{ [key: string]: string[] }>({});
+
     const handleDateClick = (date: Date) => {
         setSelectedDate(date);
     };
 
-    const events: Record<string, string[]> = {
-        '2024-03-01': ['Assignment 1', 'Quiz 5'],
-        '2024-03-02': ['Midterm'],
+    const handleAddEvent = (date: Date, title: string) => {
+        const dateKey = date.toISOString().split('T')[0];
+        const updatedEvents = {
+            ...events,
+            [dateKey]: [...(events[dateKey] || []), title]
+        };
+        setEvents(updatedEvents);
     };
 
     return (
@@ -30,6 +37,9 @@ function CalendarPage() {
                     </ul>
                 </div>
             )}
+            <div className="add-event-container">
+                <EventForm onAddEvent={handleAddEvent} />
+            </div>
         </div>
     );
 }
