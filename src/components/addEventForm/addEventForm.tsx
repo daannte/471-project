@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./EventForm.css";
+import "./addEventForm.css";
 
 interface EventFormProps {
   onAddEvent: (date: Date, title: string) => void;
