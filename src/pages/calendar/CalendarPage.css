@@ -1,0 +1,34 @@
+.calendar-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.calendar-title {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.calendar {
+  width: 300px;
+  margin-bottom: 20px;
+}
+
+.react-calendar {
+  border: 1px solid #ccc;
+}
+
+.events-container {
+  margin-top: 20px;
+}
+
+.events-list {
+  list-style: none;
+  padding: 0;
+}
+
+.events-list li {
+  margin-bottom: 10px;
+}
