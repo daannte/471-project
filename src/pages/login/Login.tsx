@@ -8,7 +8,7 @@ function Login() {
 
   async function fetchUserData() {
     try {
-      const res = await axios.get("/api/fetchUser");
+      const res = await axios.get("/api/users");
       return res.data;
     } catch (err) {
       console.error("Error fetching user data: " + err);
