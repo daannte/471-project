@@ -16,6 +16,7 @@ const router = createBrowserRouter(
       <Route index element={<Home />} />
       <Route path="calendar" element={<Calendar />} />
       <Route path="login" element={<Login />} />
+      <Route path="*" element={<div>Seems like you got lost!</div>} />
     </Route>,
   ),
 );

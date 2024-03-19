@@ -10,4 +10,4 @@ router.get("/", (_, res) => {
   });
 });
 
-export { router as homedemo };
+export { router };
