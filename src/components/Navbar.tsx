@@ -1,10 +1,11 @@
+import { Link } from 'react-router-dom';
 import './Navbar.css';
 function Navbar() {
     return (
-        <div className="navbar">
-            <a href="#Calendar">Calendar</a>
-            <a href="#Grades">Grades</a>
-        </div>
+        <nav className="navbar">
+            <Link to="/">Home</Link>
+            <Link to="/CalendarPage">Calendar</Link>
+        </nav>
     );
 }
 
