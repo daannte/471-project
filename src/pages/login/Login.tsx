@@ -6,27 +6,21 @@ import { useNavigate } from "react-router-dom";
 function Login() {
   const navigate = useNavigate();
 
-  async function fetchUserData() {
-    try {
-      const res = await axios.get("/api/users");
-      return res.data;
-    } catch (err) {
-      console.error("Error fetching user data: " + err);
-    }
-  }
-
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const email = (event.target as any).elements.email.value;
     const password = (event.target as any).elements.password.value;
-    const data = await fetchUserData();
 
-    data.forEach((user: any) => {
-      if (email === user.email && password === user.password) {
-        navigate("/");
-      }
-    });
+    try {
+      const res = await axios.post("/api/login", { email, password });
+      const token = res.data.token;
+      localStorage.setItem("token", token);
+
+      navigate("/");
+    } catch (err) {
+      console.error("Error: " + err);
+    }
   }
 
   return (
