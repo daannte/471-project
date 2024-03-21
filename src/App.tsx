@@ -6,28 +6,23 @@ import {
 } from "react-router-dom";
 import "./App.css";
 
-import Home from "./pages/Home";
-import Calendar from './pages/CalendarPage';
-import Navbar from './components/Navbar';
-
-// const router = createBrowserRouter(
-//   createRoutesFromElements(<Route path="/" element={<Home />}></Route>),
-// );
+import Home from "@/pages/home/Home";
+import Calendar from "@/pages/calendar/CalendarPage";
+import Login from "@/pages/login/Login";
 
 const router = createBrowserRouter(
-  createRoutesFromElements([
-      <Route key = "home" path="/" element={<Home />} />,
-      <Route key = "CalendarPage" path="/CalendarPage" element={<Calendar />} />
-  ])
+  createRoutesFromElements(
+    <Route path="/">
+      <Route index element={<Home />} />
+      <Route path="calendar" element={<Calendar />} />
+      <Route path="login" element={<Login />} />
+      <Route path="*" element={<div>Seems like you got lost!</div>} />
+    </Route>,
+  ),
 );
 
 function App() {
-  //return <RouterProvider router={router} />;
-  return (
-    <RouterProvider router={router}>
-        <Navbar />
-    </RouterProvider>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;
