@@ -1,23 +1,40 @@
 import { useState } from "react";
 import Calendar from "react-calendar";
 import AddEventForm from "@/components/addEventForm/addEventForm";
+import EventItem from "@/components/EventItem/EventItem";
 import "./CalendarPage.css";
 import Navbar from "@/components/navbar/Navbar";
 
+interface Event {
+  date: Date;
+  title: string;
+}
+
 function CalendarPage() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [events, setEvents] = useState<{ [key: string]: string[] }>({});
+  const [events, setEvents] = useState<Event[]>([]);
 
   const handleDateClick = (date: Date) => {
     setSelectedDate(date);
   };
 
   const handleAddEvent = (date: Date, title: string) => {
-    const dateKey = date.toISOString().split("T")[0];
-    const updatedEvents = {
-      ...events,
-      [dateKey]: [...(events[dateKey] || []), title],
-    };
+    const midnightDate = new Date(date);
+    midnightDate.setHours(0, 0, 0, 0);
+  
+    setEvents([...events, { date: midnightDate, title }]);
+  };
+  
+
+  const handleUpdateEvent = (index: number, updatedEvent: Event) => {
+    const updatedEvents = [...events];
+    updatedEvents[index] = updatedEvent;
+    setEvents(updatedEvents);
+  };
+
+  const handleDeleteEvent = (index: number) => {
+    const updatedEvents = [...events];
+    updatedEvents.splice(index, 1);
     setEvents(updatedEvents);
   };
 
@@ -33,9 +50,17 @@ function CalendarPage() {
           <div className="events-container">
             <h2>Events for {selectedDate.toLocaleDateString()}</h2>
             <ul className="events-list">
-              {events[selectedDate.toISOString().split("T")[0]]?.map(
-                (event, index) => <li key={index}>{event}</li>,
-              )}
+              {events
+                .filter((event) => event.date.toDateString() === selectedDate.toDateString())
+                .map((event, index) => (
+                  <EventItem
+                    key={index}
+                    date={event.date}
+                    title={event.title}
+                    onUpdateEvent={(updatedDate, updatedTitle) => handleUpdateEvent(index, { date: updatedDate, title: updatedTitle })}
+                    onDelete={() => handleDeleteEvent(index)}
+                  />
+                ))}
             </ul>
           </div>
         )}
