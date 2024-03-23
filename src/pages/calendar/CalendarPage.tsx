@@ -19,10 +19,11 @@ function CalendarPage() {
   };
 
   const handleAddEvent = (date: Date, title: string) => {
-    const midnightDate = new Date(date);
-    midnightDate.setHours(0, 0, 0, 0);
+    //const midnightDate = new Date(date);
+    //midnightDate.setHours(0, 0, 0, 0);
   
-    setEvents([...events, { date: midnightDate, title }]);
+    setEvents([...events, { date, title }]);
+    
   };
   
 

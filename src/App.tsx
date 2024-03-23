@@ -10,6 +10,7 @@ import "./App.css";
 import Home from "@/pages/home/Home";
 import Calendar from "@/pages/calendar/CalendarPage";
 import Login from "@/pages/login/Login";
+import Grades from "@/pages/grades/Grades";
 
 const isAuthenticated = () => {
   const token = localStorage.getItem("token");
@@ -26,6 +27,7 @@ const router = createBrowserRouter(
       <Route path="calendar" element={<Calendar />} />
       <Route path="login" element={<Login />} />
       <Route path="*" element={<div>Seems like you got lost!</div>} />
+      <Route path = "grades" element = {<Grades />} />
     </Route>,
   ),
 );

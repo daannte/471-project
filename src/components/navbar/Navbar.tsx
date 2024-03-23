@@ -8,6 +8,7 @@ function Navbar() {
       <Link className="navbar__login-text" to="/login">
         Login
       </Link>
+      <Link to = "/Grades">Grades</Link>
     </nav>
   );
 }
