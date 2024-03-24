@@ -19,13 +19,8 @@ function CalendarPage() {
   };
 
   const handleAddEvent = (date: Date, title: string) => {
-    //const midnightDate = new Date(date);
-    //midnightDate.setHours(0, 0, 0, 0);
-  
     setEvents([...events, { date, title }]);
-    
   };
-  
 
   const handleUpdateEvent = (index: number, updatedEvent: Event) => {
     const updatedEvents = [...events];
@@ -52,13 +47,21 @@ function CalendarPage() {
             <h2>Events for {selectedDate.toLocaleDateString()}</h2>
             <ul className="events-list">
               {events
-                .filter((event) => event.date.toDateString() === selectedDate.toDateString())
+                .filter(
+                  (event) =>
+                    event.date.toDateString() === selectedDate.toDateString(),
+                )
                 .map((event, index) => (
                   <EventItem
                     key={index}
                     date={event.date}
                     title={event.title}
-                    onUpdateEvent={(updatedDate, updatedTitle) => handleUpdateEvent(index, { date: updatedDate, title: updatedTitle })}
+                    onUpdateEvent={(updatedDate, updatedTitle) =>
+                      handleUpdateEvent(index, {
+                        date: updatedDate,
+                        title: updatedTitle,
+                      })
+                    }
                     onDelete={() => handleDeleteEvent(index)}
                   />
                 ))}
