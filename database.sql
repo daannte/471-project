@@ -27,3 +27,17 @@ CREATE TABLE user (
 INSERT INTO user (ucid, full_name, email, password, role_type) VALUES 
 (123456789, "Student Test", "student@test.com", "student123", NULL),
 (987654321, "Professor Test", "professor@test.com", "professor123", "admin");
+
+-- Create the GRADES table
+CREATE TABLE grades (
+  ucid INT NOT NULL,
+  class VARCHAR(10) NOT NULL,
+  component VARCHAR(100) NOT NULL,
+  points INT NOT NULL,
+  weight INT NOT NULL,
+  PRIMARY KEY (ucid, class)
+);
+
+
+INSERT INTO grades (ucid, class, component, points, weight) VALUES 
+(123456789, "CPSC471", "Assignment 1", 10, 15);

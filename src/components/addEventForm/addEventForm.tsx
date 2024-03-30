@@ -19,8 +19,13 @@ function AddEventForm({ onAddEvent }: EventFormProps) {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const selectedDate = new Date(date);
-    if (!isNaN(selectedDate.getTime()) && title.trim() !== "") {
+    const day = new Date(date).getUTCDate();
+    const month = new Date(date).getUTCMonth();
+    const year = new Date(date).getUTCFullYear();
+
+    const selectedDate = new Date(year, month, day);
+    console.log(selectedDate);
+    if (date) {
       onAddEvent(selectedDate, title);
       setDate("");
       setTitle("");

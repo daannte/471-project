@@ -1,0 +1,12 @@
+.event-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.edit-button button {
+    margin-left: 10px;
+}
