@@ -34,10 +34,18 @@ CREATE TABLE grades (
   class VARCHAR(10) NOT NULL,
   component VARCHAR(100) NOT NULL,
   points INT NOT NULL,
-  weight INT NOT NULL,
   PRIMARY KEY (ucid, class)
 );
 
+INSERT INTO grades (ucid, class, component, points) VALUES 
+(123456789, "CPSC471", "Assignment 1", 10);
 
-INSERT INTO grades (ucid, class, component, points, weight) VALUES 
-(123456789, "CPSC471", "Assignment 1", 10, 15);
+-- Create the COMPONENT table
+CREATE TABLE component (
+  name VARCHAR(50) NOT NULL,
+  weight INT NOT NULL,
+  points INT NOT NULL,
+  type VARCHAR(50) NOT NULL,
+  class VARCHAR(10) NOT NULL,
+  PRIMARY KEY (name)
+);

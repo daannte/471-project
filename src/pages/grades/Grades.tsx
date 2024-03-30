@@ -9,12 +9,14 @@ function Grades() {
         <div className="row">
           <div className="long-row">
             <span>Assignments</span>
+            <button className="add">+</button>
             <span className="grade">F</span>
           </div>
         </div>
         <div className="row">
           <div className="long-row">
             <span>Exams</span>
+            <button className="add">+</button>
             <span className="grade">F</span>
           </div>
         </div>
