@@ -24,10 +24,19 @@ const router = createBrowserRouter(
         index
         element={isAuthenticated() ? <Home /> : <Navigate to="/login" />}
       />
-      <Route path="calendar" element={<Calendar />} />
-      <Route path="login" element={<Login />} />
+      <Route
+        path="calendar"
+        element={isAuthenticated() ? <Calendar /> : <Navigate to="/login" />}
+      />
+      <Route
+        path="login"
+        element={isAuthenticated() ? <Login /> : <Navigate to="/" />}
+      />
+      <Route
+        path="grades"
+        element={isAuthenticated() ? <Grades /> : <Navigate to="/login" />}
+      />
       <Route path="*" element={<div>Seems like you got lost!</div>} />
-      <Route path = "grades" element = {<Grades />} />
     </Route>,
   ),
 );
