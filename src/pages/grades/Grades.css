@@ -36,3 +36,14 @@
   justify-content: center;
 }
 
+.dynamic-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* CSS for spans containing submitted text */
+.submitted span {
+  flex: 1; /* Equal width distribution */
+  margin: 0 5px; /* Adjust spacing between spans */
+}
