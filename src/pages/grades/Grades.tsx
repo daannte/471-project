@@ -3,19 +3,16 @@ import "./Grades.css";
 import Navbar from "@/components/navbar/Navbar";
 
 function Grades() {
-  // State variables to track the rows of assignments and exams
   const [assignments, setAssignments] = useState([]);
   const [exams, setExams] = useState([]);
 
   // Function to handle adding a new component row
   const handleAddComponent = (componentType) => {
-    // Create a new component object with default values
     const newComponent = {
       name: "",
       points: "",
       weight: ""
     };
-    // Add the new component to the corresponding array based on component type
     if (componentType === "assignment") {
       setAssignments([...assignments, newComponent]);
     } else if (componentType === "exam") {
@@ -39,7 +36,6 @@ function Grades() {
 
   // Function to handle submitting component data
   const handleSubmit = (index, componentType) => {
-    // Set the corresponding property to 'submitted' in the component object
     if (componentType === "assignment") {
       const updatedAssignments = [...assignments];
       updatedAssignments[index].submitted = true;
@@ -47,6 +43,20 @@ function Grades() {
     } else if (componentType === "exam") {
       const updatedExams = [...exams];
       updatedExams[index].submitted = true;
+      setExams(updatedExams);
+    }
+  };
+
+  // Function to handle editing a submitted row
+  const handleEdit = (index, componentType) => {
+    // Set the 'submitted' property to false to allow editing
+    if (componentType === "assignment") {
+      const updatedAssignments = [...assignments];
+      updatedAssignments[index].submitted = false;
+      setAssignments(updatedAssignments);
+    } else if (componentType === "exam") {
+      const updatedExams = [...exams];
+      updatedExams[index].submitted = false;
       setExams(updatedExams);
     }
   };
@@ -71,6 +81,7 @@ function Grades() {
                   <span>{assignment.name}</span>
                   <span>{assignment.points}</span>
                   <span>{assignment.weight}</span>
+                  <button onClick={() => handleEdit(index, "assignment")}>Edit</button>
                 </>
               ) : (
                 <>
@@ -114,6 +125,7 @@ function Grades() {
                   <span>{exam.name}</span>
                   <span>{exam.points}</span>
                   <span>{exam.weight}</span>
+                  <button onClick={() => handleEdit(index, "exam")}>Edit</button>
                 </>
               ) : (
                 <>
