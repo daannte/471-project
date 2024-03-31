@@ -1,11 +1,8 @@
 import axios from "axios";
 import "./Login.css";
 import Navbar from "@/components/navbar/Navbar";
-import { useNavigate } from "react-router-dom";
 
 function Login() {
-  const navigate = useNavigate();
-
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -17,7 +14,7 @@ function Login() {
       const token = res.data.token;
       localStorage.setItem("token", token);
 
-      navigate("/");
+      window.location.reload();
     } catch (err) {
       console.error("Error: " + err);
     }
