@@ -2,13 +2,10 @@
   background-color: white;
   display: flex;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  justify-content: left;
+  justify-content: center;
   align-items: center;
-  padding: 10px 20px;
+  padding: 15px 20px;
   font-size: 18px;
-  font-family: "Lato", sans-serif;
-  font-weight: 400;
-  font-style: normal;
 }
 
 .navbar a {
@@ -19,9 +16,4 @@
 
 .navbar a:hover {
   color: #007bff;
-  text-decoration: underline;
-}
-
-.navbar__login-text {
-  margin-left: auto;
 }
