@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./Grades.css";
 import Navbar from "@/components/navbar/Navbar";
+import axios from "axios";
 
 interface Component {
   name: string;
@@ -12,6 +13,39 @@ interface Component {
 function Grades() {
   const [assignments, setAssignments] = useState<Component[]>([]);
   const [exams, setExams] = useState<Component[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const assignments_res = await axios.get(
+          "/api/components?type=assignment",
+        );
+        const exams_res = await axios.get("/api/components?type=exam");
+
+        if (assignments_res.data.length > 0) {
+          const assignments_submitted = assignments_res.data.map(
+            (assignment: Component) => ({
+              ...assignment,
+              submitted: true,
+            }),
+          );
+          setAssignments(assignments_submitted);
+        }
+
+        if (exams_res.data.length > 0) {
+          const exams_submitted = exams_res.data.map((exam: Component) => ({
+            ...exam,
+            submitted: true,
+          }));
+          setExams(exams_submitted);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   // Function to handle adding a new component row
   const handleAddComponent = (componentType: string) => {
@@ -51,15 +85,49 @@ function Grades() {
   };
 
   // Function to handle submitting component data
-  const handleSubmit = (index: number, componentType: string) => {
+  const handleSubmit = async (index: number, componentType: string) => {
     if (componentType === "assignment") {
       const updatedAssignments = [...assignments];
-      updatedAssignments[index].submitted = true;
-      setAssignments(updatedAssignments);
+      const { name, points, weight } = updatedAssignments[index];
+
+      if (name && points && !isNaN(points) && weight && !isNaN(weight)) {
+        updatedAssignments[index].submitted = true;
+        const res = await axios.post("/api/components", {
+          component: updatedAssignments[index],
+          type: componentType,
+        });
+
+        if (!res.data.success) {
+          const res1 = await axios.put("/api/components", {
+            component: updatedAssignments[index],
+          });
+
+          if (res1) {
+            setAssignments(updatedAssignments);
+          }
+        }
+      }
     } else if (componentType === "exam") {
       const updatedExams = [...exams];
-      updatedExams[index].submitted = true;
-      setExams(updatedExams);
+      const { name, points, weight } = updatedExams[index];
+
+      if (name && points && !isNaN(points) && weight && !isNaN(weight)) {
+        updatedExams[index].submitted = true;
+        const res = await axios.post("/api/components", {
+          component: updatedExams[index],
+          type: componentType,
+        });
+
+        if (!res.data.success) {
+          const res1 = await axios.put("/api/components", {
+            component: updatedExams[index],
+          });
+
+          if (res1) {
+            setExams(updatedExams);
+          }
+        }
+      }
     }
   };
 
