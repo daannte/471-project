@@ -41,10 +41,10 @@ INSERT INTO grades (ucid, class, component, points) VALUES
 (123456789, "CPSC471", "Assignment 1", 10);
 
 -- Create the COMPONENT table
-CREATE TABLE component (
+CREATE TABLE components (
   name VARCHAR(50) NOT NULL,
-  weight INT NOT NULL,
-  points INT NOT NULL,
+  weight DECIMAL(10, 2) NOT NULL,
+  points DECIMAL(10, 2) NOT NULL,
   type VARCHAR(50) NOT NULL,
   class VARCHAR(10) NOT NULL,
   PRIMARY KEY (name)

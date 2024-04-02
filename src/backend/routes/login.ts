@@ -8,7 +8,7 @@ router.post("/", async (req, res) => {
 
     const response = await axios.get("http://localhost:5173/api/users");
     const users = response.data;
-    console.log(users);
+
     const user = users.find(
       (user: any) => user.email === email && user.password === password,
     );
