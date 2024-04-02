@@ -5,17 +5,14 @@ import {
   createBrowserRouter,
   Navigate,
 } from "react-router-dom";
+import isAuthenticated from "./utils/auth";
 import "./App.css";
 
 import Home from "@/pages/home/Home";
 import Calendar from "@/pages/calendar/CalendarPage";
 import Login from "@/pages/login/Login";
+import Logout from "./utils/Logout";
 import Grades from "@/pages/grades/Grades";
-
-const isAuthenticated = () => {
-  const token = localStorage.getItem("token");
-  return token !== undefined && token !== null;
-};
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -29,12 +26,16 @@ const router = createBrowserRouter(
         element={isAuthenticated() ? <Calendar /> : <Navigate to="/login" />}
       />
       <Route
+        path="grades"
+        element={isAuthenticated() ? <Grades /> : <Navigate to="/login" />}
+      />
+      <Route
         path="login"
         element={isAuthenticated() ? <Navigate to="/" /> : <Login />}
       />
       <Route
-        path="grades"
-        element={isAuthenticated() ? <Grades /> : <Navigate to="/login" />}
+        path="logout"
+        element={isAuthenticated() ? <Logout /> : <Navigate to="/login" />}
       />
       <Route path="*" element={<div>Seems like you got lost!</div>} />
     </Route>,
