@@ -87,27 +87,27 @@ function CalendarPage() {
         <div className="add-event-container">
           <AddEventForm onAddEvent={handleAddEvent} />
         </div>
-      </div>
-      <div className="upcoming-events">
-        <h2>Upcoming Events</h2>
-        <h3>This Week</h3>
-        <ul>
-          {thisWeekEvents.map((event, index) => (
-            <li key={index}>{event.title}</li>
-          ))}
-        </ul>
-        <h3>This Month</h3>
-        <ul>
-          {thisMonthEvents.map((event, index) => (
-            <li key={index}>{event.title}</li>
-          ))}
-        </ul>
-        <h3>This Year</h3>
-        <ul>
-          {thisYearEvents.map((event, index) => (
-            <li key={index}>{event.title}</li>
-          ))}
-        </ul>
+        <div className="upcoming-events">
+          <h2>Upcoming Events</h2>
+          <h3>This Week</h3>
+          <ul>
+            {thisWeekEvents.map((event, index) => (
+              <li key={index}>{event.date.toLocaleDateString()}: {event.title}</li>
+            ))}
+          </ul>
+          <h3>This Month</h3>
+          <ul>
+            {thisMonthEvents.map((event, index) => (
+              <li key={index}>{event.date.toLocaleDateString()}: {event.title}</li>
+            ))}
+          </ul>
+          <h3>This Year</h3>
+          <ul>
+            {thisYearEvents.map((event, index) => (
+              <li key={index}>{event.date.toLocaleDateString()}: {event.title}</li>
+            ))}
+          </ul>
+        </div>
       </div>
     </>
   );
