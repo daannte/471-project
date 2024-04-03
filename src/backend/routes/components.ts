@@ -54,4 +54,15 @@ router.put("/", (req, res) => {
   });
 });
 
+router.delete("/", (req, res) => {
+  const name = req.body.name;
+
+  const query = "DELETE FROM components WHERE name = ?";
+
+  db.query(query, [name], (err) => {
+    if (err) return res.json({ success: false });
+    return res.json({ success: true });
+  });
+});
+
 export { router };

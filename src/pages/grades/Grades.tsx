@@ -105,6 +105,8 @@ function Grades() {
           if (res1) {
             setAssignments(updatedAssignments);
           }
+        } else {
+          setAssignments(updatedAssignments);
         }
       }
     } else if (componentType === "exam") {
@@ -126,6 +128,8 @@ function Grades() {
           if (res1) {
             setExams(updatedExams);
           }
+        } else {
+          setExams(updatedExams);
         }
       }
     }
@@ -146,15 +150,27 @@ function Grades() {
   };
 
   // Function to handle deleting a row
-  const handleDelete = (index: number, componentType: string) => {
+  const handleDelete = async (index: number, componentType: string) => {
     if (componentType === "assignment") {
       const updatedAssignments = [...assignments];
-      updatedAssignments.splice(index, 1);
-      setAssignments(updatedAssignments);
+      const res = await axios.delete("/api/components", {
+        data: { name: updatedAssignments[index].name },
+      });
+
+      if (res.data.success) {
+        updatedAssignments.splice(index, 1);
+        setAssignments(updatedAssignments);
+      }
     } else if (componentType === "exam") {
       const updatedExams = [...exams];
-      updatedExams.splice(index, 1);
-      setExams(updatedExams);
+      const res = await axios.delete("/api/components", {
+        data: { name: updatedExams[index].name },
+      });
+
+      if (res.data.success) {
+        updatedExams.splice(index, 1);
+        setExams(updatedExams);
+      }
     }
   };
 
