@@ -13,6 +13,7 @@ interface Component {
 function Grades() {
   const [assignments, setAssignments] = useState<Component[]>([]);
   const [exams, setExams] = useState<Component[]>([]);
+  const [role, setRole] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -39,6 +40,10 @@ function Grades() {
           }));
           setExams(exams_submitted);
         }
+
+        const name = localStorage.getItem("name");
+        const role_res = await axios.get(`/api/users?name=${name}`);
+        setRole(role_res.data[0].role_type);
       } catch (err) {
         console.log(err);
       }
