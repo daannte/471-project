@@ -1,6 +1,6 @@
 .calendar-container {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
   height: 100vh;
@@ -31,4 +31,9 @@
 
 .events-list li {
   margin-bottom: 10px;
+}
+
+.upcoming-events {
+  height: 40%;
+  margin-left: 8rem;
 }

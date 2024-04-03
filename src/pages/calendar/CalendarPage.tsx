@@ -39,72 +39,81 @@ function CalendarPage() {
   const thisWeekEvents = events.filter(
     (event) =>
       event.date >= today &&
-      event.date <= new Date(today.getFullYear(), today.getMonth(), today.getDate() + 7)
+      event.date <=
+        new Date(today.getFullYear(), today.getMonth(), today.getDate() + 7),
   );
   const thisMonthEvents = events.filter(
     (event) =>
       event.date.getFullYear() === today.getFullYear() &&
-      event.date.getMonth() === today.getMonth()
+      event.date.getMonth() === today.getMonth(),
   );
   const thisYearEvents = events.filter(
-    (event) => event.date.getFullYear() === today.getFullYear()
+    (event) => event.date.getFullYear() === today.getFullYear(),
   );
 
   return (
     <>
       <Navbar />
       <div className="calendar-container">
-        <h1 className="calendar-title">Calendar</h1>
-        <div className="calendar">
-          <Calendar className="react-calendar" onClickDay={handleDateClick} />
-        </div>
-        {selectedDate && (
-          <div className="events-container">
-            <h2>Events for {selectedDate.toLocaleDateString()}</h2>
-            <ul className="events-list">
-              {events
-                .filter(
-                  (event) =>
-                    event.date.toDateString() === selectedDate.toDateString(),
-                )
-                .map((event, index) => (
-                  <EventItem
-                    key={index}
-                    date={event.date}
-                    title={event.title}
-                    onUpdateEvent={(updatedDate, updatedTitle) =>
-                      handleUpdateEvent(index, {
-                        date: updatedDate,
-                        title: updatedTitle,
-                      })
-                    }
-                    onDelete={() => handleDeleteEvent(index)}
-                  />
-                ))}
-            </ul>
+        <div>
+          <h1 className="calendar-title">Calendar</h1>
+          <div className="calendar">
+            <Calendar className="react-calendar" onClickDay={handleDateClick} />
           </div>
-        )}
-        <div className="add-event-container">
-          <AddEventForm onAddEvent={handleAddEvent} />
+          {selectedDate && (
+            <div className="events-container">
+              <h2>Events for {selectedDate.toLocaleDateString()}</h2>
+              <ul className="events-list">
+                {events
+                  .filter(
+                    (event) =>
+                      event.date.toDateString() === selectedDate.toDateString(),
+                  )
+                  .map((event, index) => (
+                    <EventItem
+                      key={index}
+                      date={event.date}
+                      title={event.title}
+                      onUpdateEvent={(updatedDate, updatedTitle) =>
+                        handleUpdateEvent(index, {
+                          date: updatedDate,
+                          title: updatedTitle,
+                        })
+                      }
+                      onDelete={() => handleDeleteEvent(index)}
+                    />
+                  ))}
+              </ul>
+            </div>
+          )}
+          <div className="add-event-container">
+            <AddEventForm onAddEvent={handleAddEvent} />
+          </div>
         </div>
         <div className="upcoming-events">
           <h2>Upcoming Events</h2>
           <h3>This Week</h3>
           <ul>
             {thisWeekEvents.map((event, index) => (
-              <li key={index}>{event.date.toLocaleDateString()}: {event.title}</li>
+              <li key={index}>
+                {event.date.toLocaleDateString()}: {event.title}
+              </li>
             ))}
           </ul>
           <h3>This Month</h3>
           <ul>
             {thisMonthEvents.map((event, index) => (
-              <li key={index}>{event.date.toLocaleDateString()}: {event.title}</li>
+              <li key={index}>
+                {event.date.toLocaleDateString()}: {event.title}
+              </li>
             ))}
           </ul>
           <h3>This Year</h3>
           <ul>
             {thisYearEvents.map((event, index) => (
-              <li key={index}>{event.date.toLocaleDateString()}: {event.title}</li>
+              <li key={index}>
+                {event.date.toLocaleDateString()}: {event.title}
+              </li>
             ))}
           </ul>
         </div>
