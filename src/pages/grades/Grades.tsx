@@ -145,6 +145,19 @@ function Grades() {
     }
   };
 
+  // Function to handle deleting a row
+  const handleDelete = (index: number, componentType: string) => {
+    if (componentType === "assignment") {
+      const updatedAssignments = [...assignments];
+      updatedAssignments.splice(index, 1);
+      setAssignments(updatedAssignments);
+    } else if (componentType === "exam") {
+      const updatedExams = [...exams];
+      updatedExams.splice(index, 1);
+      setExams(updatedExams);
+    }
+  };
+
   return (
     <>
       <Navbar />
@@ -212,6 +225,9 @@ function Grades() {
                   <button onClick={() => handleSubmit(index, "assignment")}>
                     Submit
                   </button>
+                  <button onClick={() => handleDelete(index, "assignment")}>
+                    Delete
+                  </button>
                 </>
               )}
             </div>
@@ -270,6 +286,9 @@ function Grades() {
                   />
                   <button onClick={() => handleSubmit(index, "exam")}>
                     Submit
+                  </button>
+                  <button onClick={() => handleDelete(index, "exam")}>
+                    Delete
                   </button>
                 </>
               )}
