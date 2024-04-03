@@ -34,6 +34,22 @@ function CalendarPage() {
     setEvents(updatedEvents);
   };
 
+  // Filter events happening this week, this month, and this year
+  const today = new Date();
+  const thisWeekEvents = events.filter(
+    (event) =>
+      event.date >= today &&
+      event.date <= new Date(today.getFullYear(), today.getMonth(), today.getDate() + 7)
+  );
+  const thisMonthEvents = events.filter(
+    (event) =>
+      event.date.getFullYear() === today.getFullYear() &&
+      event.date.getMonth() === today.getMonth()
+  );
+  const thisYearEvents = events.filter(
+    (event) => event.date.getFullYear() === today.getFullYear()
+  );
+
   return (
     <>
       <Navbar />
@@ -71,6 +87,27 @@ function CalendarPage() {
         <div className="add-event-container">
           <AddEventForm onAddEvent={handleAddEvent} />
         </div>
+      </div>
+      <div className="upcoming-events">
+        <h2>Upcoming Events</h2>
+        <h3>This Week</h3>
+        <ul>
+          {thisWeekEvents.map((event, index) => (
+            <li key={index}>{event.title}</li>
+          ))}
+        </ul>
+        <h3>This Month</h3>
+        <ul>
+          {thisMonthEvents.map((event, index) => (
+            <li key={index}>{event.title}</li>
+          ))}
+        </ul>
+        <h3>This Year</h3>
+        <ul>
+          {thisYearEvents.map((event, index) => (
+            <li key={index}>{event.title}</li>
+          ))}
+        </ul>
       </div>
     </>
   );
