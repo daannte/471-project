@@ -1,7 +1,7 @@
 import express, { Express } from "express";
 import cors from "cors";
 
-import { users, login, grades, components } from "./routes";
+import { users, login, grades, components, course } from "./routes";
 
 // Setup express
 const app: Express = express();
@@ -13,6 +13,7 @@ app.use("/api/users", users);
 app.use("/api/login", login);
 app.use("/api/grades", grades);
 app.use("/api/components", components);
+app.use("/api/course", course);
 
 // For endpoints that don't exist
 app.use("/api/*", (_, res) => {

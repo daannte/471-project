@@ -43,11 +43,15 @@ router.put("/", (req, res) => {
     if (err) return res.json({ success: false });
     else {
       if (!result.length) return res.json({ success: false });
-      db.query(update_query, [name, f_points, f_weight, name], (update_err, _) => {
-        if (update_err) {
-          return res.json({ success: false });
-        }
-      });
+      db.query(
+        update_query,
+        [name, f_points, f_weight, name],
+        (update_err, _) => {
+          if (update_err) {
+            return res.json({ success: false });
+          }
+        },
+      );
       return res.json({ success: true });
     }
   });
