@@ -6,7 +6,7 @@ const router = express.Router();
 router.get("/", (req, res) => {
   const type = req.query.type;
 
-  let query = "SELECT * FROM components";
+  let query = "SELECT * FROM component";
   if (type) query += ` WHERE type = '${type}'`;
 
   db.query(query, (err, data) => {
@@ -16,14 +16,13 @@ router.get("/", (req, res) => {
 });
 
 router.post("/", (req, res) => {
-  const { name, points, weight } = req.body.component;
-  const type = req.body.type;
+  const { id, name, points, weight, type, section_id } = req.body.component;
   const f_points = parseFloat(points);
   const f_weight = parseFloat(weight);
 
   const query =
-    "INSERT INTO components (name, weight, points, type, class) VALUES (?, ?, ?, ?, ?)";
-  const values = [name, f_weight, f_points, type, "CPSC 471"];
+    "INSERT INTO component (id, name, weight, points, type, section_id) VALUES (?, ?, ?, ?, ?, ?)";
+  const values = [id, name, f_weight, f_points, type, section_id];
 
   db.query(query, values, (err, _) => {
     if (err) return res.json({ success: false });
@@ -32,19 +31,19 @@ router.post("/", (req, res) => {
 });
 
 router.put("/", (req, res) => {
-  const { name, points, weight } = req.body.component;
+  const { id, name, points, weight } = req.body.component;
   const f_points = parseFloat(points);
   const f_weight = parseFloat(weight);
 
-  const in_db_query = "SELECT * FROM components WHERE name = ?";
+  const in_db_query = "SELECT * FROM component WHERE id = ?";
   const update_query =
-    "UPDATE components SET points = ?, weight = ? WHERE name = ?";
+    "UPDATE component SET name = ?, points = ?, weight = ? WHERE id = ?";
 
-  db.query(in_db_query, [name], (err, result: RowDataPacket[]) => {
+  db.query(in_db_query, [id], (err, result: RowDataPacket[]) => {
     if (err) return res.json({ success: false });
     else {
       if (!result.length) return res.json({ success: false });
-      db.query(update_query, [f_points, f_weight, name], (update_err, _) => {
+      db.query(update_query, [name, f_points, f_weight, name], (update_err, _) => {
         if (update_err) {
           return res.json({ success: false });
         }
@@ -55,11 +54,11 @@ router.put("/", (req, res) => {
 });
 
 router.delete("/", (req, res) => {
-  const name = req.body.name;
+  const id = req.body.id;
 
-  const query = "DELETE FROM components WHERE name = ?";
+  const query = "DELETE FROM component WHERE id = ?";
 
-  db.query(query, [name], (err) => {
+  db.query(query, [id], (err) => {
     if (err) return res.json({ success: false });
     return res.json({ success: true });
   });
