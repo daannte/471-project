@@ -3,7 +3,7 @@ import db from "../db";
 const router = express.Router();
 
 router.get("/", (_, res) => {
-  const query = "SELECT * FROM grades;";
+  const query = "SELECT * FROM grade;";
   db.query(query, (err, data) => {
     if (err) return res.json(`Error fetching from table: ${err}`);
     return res.json(data);

@@ -49,7 +49,7 @@ CREATE TABLE grade (
   FOREIGN KEY (component_id) REFERENCES component(id)
 );
 
-INSERT INTO grades (ucid, class, component, points) VALUES 
+INSERT INTO grade (ucid, class, component, points) VALUES 
 (123456789, "CPSC471", "Assignment 1", 10);
 
 -- Create the COMPONENT table
