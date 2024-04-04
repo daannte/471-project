@@ -57,20 +57,19 @@ CREATE TABLE grade (
   ucid INT NOT NULL,
   component_id INT NOT NULL,
   points INT NOT NULL,
-  PRIMARY KEY (ucid, component_id)
+  PRIMARY KEY (ucid, component_id),
   FOREIGN KEY (component_id) REFERENCES component(id)
 );
 
-INSERT INTO grade (ucid, component_id, points) VALUES 
-(123456789, 1, 10);
-
+-- INSERT INTO grade (ucid, component_id, points) VALUES
+-- (123456789, 1, 10);
 
 -- Create the GRADEs_scale table
 CREATE TABLE grade_scale (
-  letter VARCHAR(1) NOT NULL
+  letter VARCHAR(1) NOT NULL,
   section_id INT NOT NULL, 
   min_perc INT NOT NULL,
   max_perc INT NOT NULL,
-  PRIMARY KEY (letter)
+  PRIMARY KEY (letter),
   FOREIGN KEY (section_id) REFERENCES section(id)
 );
