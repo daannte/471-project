@@ -1,48 +1,37 @@
 .home {
-    background-color: #eaeaea; /* Slightly darker grey background */
-    padding-top: 50px; /* Adjust to match the height of the navbar */
-    display: flex;
-    flex-direction: column; /* Stack elements vertically */
-    align-items: center; /* Center horizontally */
-    height: 100vh;
-    font-family: "Lato", sans-serif;
-    font-weight: 400;
-    font-style: normal;
-}
-
-.navbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 1000; /* Ensure navbar stays on top of other content */
+  height: 100vh;
 }
 
 .main-container {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  flex-grow: 1; /* Allow main container to grow and fill remaining space */
+  width: 100%;
+  height: 100%;
 }
 
-.course-box {
-  background-color: white;
-  border: 1px solid #ccc;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  border-radius: 8px;
-  width: 400px;
+.courses__title {
+  margin-bottom: 1.5rem;
 }
 
-.course-box h2 {
-  margin-top: 0;
-}
-
-.inner-box {
+.courses {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   background-color: white;
   border: 1px solid #ccc;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 10px;
   border-radius: 8px;
 }
 
+.inner-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 1rem;
+  padding: 1rem;
+  border-radius: 8px;
+  background: whitesmoke;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}

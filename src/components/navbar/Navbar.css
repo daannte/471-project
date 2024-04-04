@@ -6,6 +6,11 @@
   align-items: center;
   padding: 15px 20px;
   font-size: 18px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  z-index: 999;
 }
 
 .navbar a {
