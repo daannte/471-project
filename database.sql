@@ -42,7 +42,9 @@ CREATE TABLE section (
   course_name VARCHAR(50),
   course_num  INT,
   PRIMARY KEY (id),
-  FOREIGN KEY (course_name, course_num) REFERENCES course(name, number)
+  FOREIGN KEY (course_name, course_num) REFERENCES course(name, number),
+  FOREIGN KEY (ta_id) REFERENCES user(ucid),
+  FOREIGN KEY (instr_id) REFERENCES user(ucid)
 );
 
 -- Create the COMPONENT table
@@ -74,4 +76,13 @@ CREATE TABLE grade_scale (
   max_perc INT NOT NULL,
   PRIMARY KEY (letter),
   FOREIGN KEY (section_id) REFERENCES section(id)
+);
+
+-- Create IN table
+CREATE TABLE IN (
+  student_id INT NOT NULL,
+  section_id INT NOT NULL,
+  PRIMARY KEY (student_id, section_id),
+  FOREIGN KEY (section_id) REFERENCES section(id),
+  FOREIGN KEY (student_id) REFERENCES user(ucid)
 );
