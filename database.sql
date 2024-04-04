@@ -61,9 +61,6 @@ CREATE TABLE grade (
   FOREIGN KEY (component_id) REFERENCES component(id)
 );
 
--- INSERT INTO grade (ucid, component_id, points) VALUES
--- (123456789, 1, 10);
-
 -- Create the GRADEs_scale table
 CREATE TABLE grade_scale (
   letter VARCHAR(1) NOT NULL,
