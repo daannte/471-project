@@ -15,7 +15,7 @@ router.post("/", async (req, res) => {
 
     if (user) {
       const token = "testtoken123";
-      res.json({ token, name: user.full_name });
+      res.json({ token, ucid: user.ucid });
     }
   } catch (err) {
     console.log("Error: " + err);

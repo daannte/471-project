@@ -12,9 +12,9 @@ function Login() {
     try {
       const res = await axios.post("/api/login", { email, password });
       const token = res.data.token;
-      const name = res.data.name;
+      const ucid = res.data.ucid;
       localStorage.setItem("token", token);
-      localStorage.setItem("name", name);
+      localStorage.setItem("ucid", ucid);
 
       window.location.reload();
     } catch (err) {
