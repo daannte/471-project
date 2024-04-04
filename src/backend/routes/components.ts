@@ -23,7 +23,6 @@ router.post("/", (req, res) => {
   const query =
     "INSERT INTO component (id, name, weight, points, type, section_id) VALUES (?, ?, ?, ?, ?, ?)";
   const values = [id, name, f_weight, f_points, type, section_id];
-  // change**
 
   db.query(query, values, (err, _) => {
     if (err) return res.json({ success: false });
