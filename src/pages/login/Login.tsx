@@ -13,6 +13,7 @@ function Login() {
       const res = await axios.post("/api/login", { email, password });
       const token = res.data.token;
       const ucid = res.data.ucid;
+
       localStorage.setItem("token", token);
       localStorage.setItem("ucid", ucid);
 

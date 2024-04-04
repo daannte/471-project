@@ -2,7 +2,7 @@
   height: 100vh;
 }
 
-.main-container {
+.courses__container {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -22,6 +22,11 @@
   border: 1px solid #ccc;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
+}
+
+.course__link {
+  text-decoration: none;
+  color: inherit;
 }
 
 .inner-box {

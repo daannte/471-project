@@ -25,10 +25,10 @@ const router = createBrowserRouter(
         path="calendar"
         element={isAuthenticated() ? <Calendar /> : <Navigate to="/login" />}
       />
-      <Route
-        path="grades"
-        element={isAuthenticated() ? <Grades /> : <Navigate to="/login" />}
-      />
+      {/* <Route */}
+      {/*   path="grades" */}
+      {/*   element={isAuthenticated() ? <Grades /> : <Navigate to="/login" />} */}
+      {/* /> */}
       <Route
         path="login"
         element={isAuthenticated() ? <Navigate to="/" /> : <Login />}
@@ -37,17 +37,17 @@ const router = createBrowserRouter(
         path="logout"
         element={isAuthenticated() ? <Logout /> : <Navigate to="/login" />}
       />
+      <Route
+        path="courses/:course"
+        element={isAuthenticated() ? <Grades /> : <Navigate to="/login" />}
+      />
       <Route path="*" element={<div>Seems like you got lost!</div>} />
     </Route>,
   ),
 );
 
 function App() {
-  return (
-    <>
-      <RouterProvider router={router} />
-    </>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;

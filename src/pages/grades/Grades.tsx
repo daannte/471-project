@@ -187,12 +187,12 @@ function Grades() {
           <div className="long-row">
             <span>Assignments</span>
             {role === "admin" && (
-            <button
-              className="add"
-              onClick={() => handleAddComponent("assignment")}
-            >
-              +
-            </button>
+              <button
+                className="add"
+                onClick={() => handleAddComponent("assignment")}
+              >
+                +
+              </button>
             )}
             <span className="grade">F</span>
           </div>
@@ -260,7 +260,10 @@ function Grades() {
           <div className="long-row">
             <span>Exams</span>
             {role === "admin" && (
-              <button className="add" onClick={() => handleAddComponent("exam")}>
+              <button
+                className="add"
+                onClick={() => handleAddComponent("exam")}
+              >
                 +
               </button>
             )}
