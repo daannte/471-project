@@ -11,13 +11,12 @@ CREATE TABLE user (
   full_name VARCHAR(100) NOT NULL,
   email VARCHAR(100) NOT NULL,
   password VARCHAR(50) NOT NULL,
-  role_type VARCHAR(10),
   PRIMARY KEY (ucid)
 );
 
-INSERT INTO user (ucid, full_name, email, password, role_type) VALUES 
-(123456789, "Student Test", "student@test.com", "student123", NULL),
-(987654321, "Professor Test", "professor@test.com", "professor123", "admin");
+INSERT INTO user (ucid, full_name, email, password) VALUES 
+(123456789, "Student Test", "student@test.com", "student123"),
+(987654321, "Professor Test", "professor@test.com", "professor123");
 
 -- Create the COURSE table
 CREATE TABLE course (
@@ -26,7 +25,6 @@ CREATE TABLE course (
   title VARCHAR(50) NOT NULL,
   PRIMARY KEY (name, number)
 );
-
 
 INSERT INTO course (name, number, title) VALUES 
 ("CPSC", 471, "Database Management"),
@@ -47,6 +45,10 @@ CREATE TABLE section (
   FOREIGN KEY (instr_id) REFERENCES user(ucid)
 );
 
+INSERT INTO section (id, ta_id, instr_id, year, semester, course_name, course_num) VALUES 
+(1, 123456789, 987654321, 2024, "Winter", "CPSC", 471),
+(2, NULL, 987654321, 2021, "Fall", "MATH", 267);
+
 -- Create the COMPONENT table
 CREATE TABLE component (
   id INT NOT NULL,
@@ -55,6 +57,7 @@ CREATE TABLE component (
   points DECIMAL(10, 2) NOT NULL,
   type VARCHAR(50) NOT NULL,
   section_id INT NOT NULL,
+  date DATETIME,
   PRIMARY KEY (id),
   FOREIGN KEY (section_id) REFERENCES section(id)
 );
@@ -86,3 +89,7 @@ CREATE TABLE sins  (
   FOREIGN KEY (section_id) REFERENCES section(id),
   FOREIGN KEY (student_id) REFERENCES user(ucid)
 );
+
+INSERT INTO sins (student_id, section_id) VALUES 
+(123456789, 1),
+(123456789, 2);
