@@ -68,7 +68,7 @@ INSERT INTO grade (ucid, component_id, points) VALUES
 -- Create the GRADEs_scale table
 CREATE TABLE grade_scale (
   letter VARCHAR(1) NOT NULL
-  section_id INT NOT NULL,
+  section_id INT NOT NULL, 
   min_perc INT NOT NULL,
   max_perc INT NOT NULL,
   PRIMARY KEY (letter)
