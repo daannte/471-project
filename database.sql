@@ -79,7 +79,7 @@ CREATE TABLE grade_scale (
 );
 
 -- Create IN table
-CREATE TABLE IN (
+CREATE TABLE sins  (
   student_id INT NOT NULL,
   section_id INT NOT NULL,
   PRIMARY KEY (student_id, section_id),
