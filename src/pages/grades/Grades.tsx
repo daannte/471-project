@@ -41,8 +41,8 @@ function Grades() {
           setExams(exams_submitted);
         }
 
-        const name = localStorage.getItem("name");
-        const role_res = await axios.get(`/api/users?name=${name}`);
+        const ucid = localStorage.getItem("ucid");
+        const role_res = await axios.get(`/api/users?ucid=${ucid}`);
         setRole(role_res.data[0].role_type);
       } catch (err) {
         console.log(err);
