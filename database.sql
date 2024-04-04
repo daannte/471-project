@@ -27,6 +27,11 @@ CREATE TABLE course (
   PRIMARY KEY (name, number)
 );
 
+
+INSERT INTO course (name, number, title) VALUES 
+("CPSC", 471, "Database Management"),
+("MATH", 267, "Calculus II");
+
 -- Create the SECTION table
 CREATE TABLE section (
   id INT NOT NULL,
