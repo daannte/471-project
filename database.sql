@@ -24,7 +24,7 @@ CREATE TABLE course (
   name VARCHAR(50) NOT NULL,
   number INT NOT NULL,
   title VARCHAR(50) NOT NULL,
-  PRIMARY KEY (name, number),
+  PRIMARY KEY (name, number)
 );
 
 -- Create the SECTION table
@@ -40,18 +40,6 @@ CREATE TABLE section (
   FOREIGN KEY (course_name, course_num) REFERENCES course(name, number)
 );
 
--- Create the GRADE table
-CREATE TABLE grade (
-  ucid INT NOT NULL,
-  component_id INT NOT NULL,
-  points INT NOT NULL,
-  PRIMARY KEY (ucid, component_id)
-  FOREIGN KEY (component_id) REFERENCES component(id)
-);
-
-INSERT INTO grade (ucid, class, component, points) VALUES 
-(123456789, "CPSC471", "Assignment 1", 10);
-
 -- Create the COMPONENT table
 CREATE TABLE component (
   id INT NOT NULL,
@@ -64,7 +52,20 @@ CREATE TABLE component (
   FOREIGN KEY (section_id) REFERENCES section(id)
 );
 
--- Create the GRADES table
+-- Create the GRADE table
+CREATE TABLE grade (
+  ucid INT NOT NULL,
+  component_id INT NOT NULL,
+  points INT NOT NULL,
+  PRIMARY KEY (ucid, component_id)
+  FOREIGN KEY (component_id) REFERENCES component(id)
+);
+
+INSERT INTO grade (ucid, component_id, points) VALUES 
+(123456789, 1, 10);
+
+
+-- Create the GRADEs_scale table
 CREATE TABLE grade_scale (
   letter VARCHAR(1) NOT NULL
   section_id INT NOT NULL,
