@@ -3,14 +3,14 @@ import db from "../db";
 const router = express.Router();
 
 router.get("/", (req, res) => {
-  const name = req.query.name;
+  const ucid = req.query.ucid;
 
   let query;
   let queryParams: any[];
 
-  if (name) {
-    query = "SELECT role_type FROM user WHERE full_name = ?;";
-    queryParams = [name];
+  if (ucid) {
+    query = "SELECT role_type FROM user WHERE ucid = ?;";
+    queryParams = [ucid];
   } else {
     query = "SELECT * FROM user;";
     queryParams = [];
