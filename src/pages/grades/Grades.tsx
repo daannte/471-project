@@ -259,9 +259,11 @@ function Grades() {
         <div className="row">
           <div className="long-row">
             <span>Exams</span>
-            <button className="add" onClick={() => handleAddComponent("exam")}>
-              +
-            </button>
+            {role === "admin" && (
+              <button className="add" onClick={() => handleAddComponent("exam")}>
+                +
+              </button>
+            )}
             <span className="grade">F</span>
           </div>
         </div>
