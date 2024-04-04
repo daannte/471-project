@@ -186,12 +186,14 @@ function Grades() {
         <div className="row">
           <div className="long-row">
             <span>Assignments</span>
+            {role === "admin" && (
             <button
               className="add"
               onClick={() => handleAddComponent("assignment")}
             >
               +
             </button>
+            )}
             <span className="grade">F</span>
           </div>
         </div>
