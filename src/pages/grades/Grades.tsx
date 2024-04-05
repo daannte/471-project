@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./Grades.css";
 import Navbar from "@/components/navbar/Navbar";
 import axios from "axios";
+import { useParams } from "react-router-dom";
 
 interface Component {
   name: string;
@@ -14,6 +15,7 @@ function Grades() {
   const [assignments, setAssignments] = useState<Component[]>([]);
   const [exams, setExams] = useState<Component[]>([]);
   const [role, setRole] = useState<string | null>(null);
+  const { course } = useParams();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -41,9 +43,12 @@ function Grades() {
           setExams(exams_submitted);
         }
 
-        const ucid = localStorage.getItem("ucid");
-        const role_res = await axios.get(`/api/users?ucid=${ucid}`);
-        setRole(role_res.data[0].role_type);
+        const cname = course?.slice(0, 4);
+        const cnum = course?.slice(4);
+
+        const perm_res = await axios.get(
+          `/api/users?cname=${cname}&cnum=${cnum}`,
+        );
       } catch (err) {
         console.log(err);
       }
