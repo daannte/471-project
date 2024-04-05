@@ -50,6 +50,7 @@ function Grades() {
         const perm_res = await axios.get(
           `/api/users?cname=${cname}&cnum=${cnum}&ucid=${ucid}`,
         );
+        if (perm_res.data.length !== 0) setRole("admin");
       } catch (err) {
         console.log(err);
       }

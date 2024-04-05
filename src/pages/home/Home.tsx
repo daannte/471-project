@@ -19,7 +19,7 @@ function Home() {
         const ucid = localStorage.getItem("ucid");
         const courses_res = await axios.get(`/api/sections?ucid=${ucid}`);
 
-        if (courses_res.data) setCourses(courses_res.data);
+        if (courses_res.data.length !== 0) setCourses(courses_res.data);
       } catch (err) {
         console.log(err);
       }

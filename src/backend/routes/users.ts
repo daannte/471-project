@@ -9,7 +9,8 @@ router.get("/", (req, res) => {
   let queryParams: any[];
 
   if (cname && cnum && ucid) {
-    query = "SELECT * FROM section WHERE course_name=? AND course_num=? AND (ta_id=? OR instr_id=?);";
+    query =
+      "SELECT * FROM section WHERE course_name=? AND course_num=? AND (ta_id=? OR instr_id=?);";
     queryParams = [cname, cnum, ucid, ucid];
   } else {
     query = "SELECT * FROM user;";
