@@ -46,7 +46,7 @@ CREATE TABLE section (
 );
 
 INSERT INTO section (id, ta_id, instr_id, year, semester, course_name, course_num) VALUES 
-(1, 123456789, 987654321, 2024, "Winter", "CPSC", 471),
+(1, NULL, 987654321, 2024, "Winter", "CPSC", 471),
 (2, NULL, 987654321, 2021, "Fall", "MATH", 267);
 
 -- Create the COMPONENT table
