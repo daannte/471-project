@@ -45,9 +45,10 @@ function Grades() {
 
         const cname = course?.slice(0, 4);
         const cnum = course?.slice(4);
+        const ucid = localStorage.getItem("ucid");
 
         const perm_res = await axios.get(
-          `/api/users?cname=${cname}&cnum=${cnum}`,
+          `/api/users?cname=${cname}&cnum=${cnum}&ucid=${ucid}`,
         );
       } catch (err) {
         console.log(err);
