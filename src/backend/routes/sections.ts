@@ -10,7 +10,7 @@ router.get("/", (req, res) => {
 
   if (ucid) {
     query =
-      "SELECT section_id FROM sins WHERE student_id = ? UNION SELECT id FROM section WHERE ta_id = ? OR instr_id = ?;";
+      "SELECT name, number, title FROM course JOIN (SELECT section_id FROM sins WHERE student_id = ? UNION SELECT id FROM section WHERE ta_id = ? OR instr_id = ?);";
     queryParams = [ucid, ucid, ucid];
   } else {
     query = "SELECT * FROM section;";
