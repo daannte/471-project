@@ -241,8 +241,8 @@ function Grades() {
                                 assignment?.id === grade.component_id &&
                                 ucid === grade.ucid,
                             )?.points
-                          }/`
-                        : ""}
+                          } / `
+                        : "- / "}
                       {assignment.points}
                     </span>
                     <span>{assignment.weight}</span>
@@ -337,8 +337,8 @@ function Grades() {
                                 exam?.id === grade.component_id &&
                                 ucid === grade.ucid,
                             )?.points
-                          }/`
-                        : ""}
+                          } / `
+                        : "- / "}
                       {exam.points}
                     </span>
                     <span>{exam.weight}</span>
