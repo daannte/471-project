@@ -4,6 +4,7 @@ const router = express.Router();
 
 router.get("/", (req, res) => {
   const ucid = req.query.ucid;
+  const { cname, cnum } = req.query;
 
   let query;
   let queryParams: any[];
@@ -27,6 +28,9 @@ router.get("/", (req, res) => {
     ) AS joined_sections ON c.name = joined_sections.name AND c.number = joined_sections.number;
     `;
     queryParams = [ucid, ucid, ucid];
+  } else if (cname && cnum) {
+    query = "SELECT id FROM section WHERE course_name = ? AND course_num = ?";
+    queryParams = [cname, cnum];
   } else {
     query = "SELECT * FROM section;";
     queryParams = [];

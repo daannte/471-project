@@ -5,9 +5,12 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 
 interface Component {
+  id: number;
   name: string;
   points: number | null;
   weight: number | null;
+  sectionId: number | null;
+  date: Date | null;
   submitted?: boolean;
 }
 
@@ -15,15 +18,34 @@ function Grades() {
   const [assignments, setAssignments] = useState<Component[]>([]);
   const [exams, setExams] = useState<Component[]>([]);
   const [role, setRole] = useState<string | null>(null);
+  const [sectionId, setSectionId] = useState<number | null>(null);
   const { course } = useParams();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const assignments_res = await axios.get(
-          "/api/components?type=assignment",
+        const cname = course?.slice(0, 4);
+        const cnum = course?.slice(4);
+        const ucid = localStorage.getItem("ucid");
+
+        const perm_res = await axios.get(
+          `/api/users?cname=${cname}&cnum=${cnum}&ucid=${ucid}`,
         );
-        const exams_res = await axios.get("/api/components?type=exam");
+        if (perm_res.data.length !== 0) setRole("admin");
+
+        const section_res = await axios.get(
+          `/api/sections?cname=${cname}&cnum=${cnum}`,
+        );
+
+        const section_id = section_res.data[0].id;
+        if (section_id) setSectionId(section_id);
+
+        const assignments_res = await axios.get(
+          `/api/components?type=assignment&sectionId=${section_id}`,
+        );
+        const exams_res = await axios.get(
+          `/api/components?type=exam&sectionId=${section_id}`,
+        );
 
         if (assignments_res.data.length > 0) {
           const assignments_submitted = assignments_res.data.map(
@@ -42,15 +64,6 @@ function Grades() {
           }));
           setExams(exams_submitted);
         }
-
-        const cname = course?.slice(0, 4);
-        const cnum = course?.slice(4);
-        const ucid = localStorage.getItem("ucid");
-
-        const perm_res = await axios.get(
-          `/api/users?cname=${cname}&cnum=${cnum}&ucid=${ucid}`,
-        );
-        if (perm_res.data.length !== 0) setRole("admin");
       } catch (err) {
         console.log(err);
       }
@@ -62,9 +75,12 @@ function Grades() {
   // Function to handle adding a new component row
   const handleAddComponent = (componentType: string) => {
     const newComponent: Component = {
+      id: exams.length + assignments.length,
       name: "",
       points: null,
       weight: null,
+      sectionId,
+      date: null,
     };
 
     if (componentType === "assignment") {
@@ -110,6 +126,8 @@ function Grades() {
         });
 
         if (!res.data.success) {
+          console.log("Updating the component");
+          console.log(updatedAssignments[index]);
           const res1 = await axios.put("/api/components", {
             component: updatedAssignments[index],
           });
@@ -166,7 +184,7 @@ function Grades() {
     if (componentType === "assignment") {
       const updatedAssignments = [...assignments];
       const res = await axios.delete("/api/components", {
-        data: { name: updatedAssignments[index].name },
+        data: { id: updatedAssignments[index].id },
       });
 
       if (res.data.success) {
@@ -176,7 +194,7 @@ function Grades() {
     } else if (componentType === "exam") {
       const updatedExams = [...exams];
       const res = await axios.delete("/api/components", {
-        data: { name: updatedExams[index].name },
+        data: { id: updatedExams[index].id },
       });
 
       if (res.data.success) {

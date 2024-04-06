@@ -4,10 +4,11 @@ import { RowDataPacket } from "mysql2";
 const router = express.Router();
 
 router.get("/", (req, res) => {
-  const type = req.query.type;
+  const { type, sectionId } = req.query;
 
   let query = "SELECT * FROM component";
   if (type) query += ` WHERE type = '${type}'`;
+  if (sectionId) query += ` AND section_id = ${sectionId}`;
 
   db.query(query, (err, data) => {
     if (err) return res.json(`Error fetching from table: ${err}`);
@@ -16,13 +17,14 @@ router.get("/", (req, res) => {
 });
 
 router.post("/", (req, res) => {
-  const { id, name, points, weight, type, section_id } = req.body.component;
+  const { id, name, points, weight, sectionId, date } = req.body.component;
+  const type = req.body.type;
   const f_points = parseFloat(points);
   const f_weight = parseFloat(weight);
 
   const query =
-    "INSERT INTO component (id, name, weight, points, type, section_id) VALUES (?, ?, ?, ?, ?, ?)";
-  const values = [id, name, f_weight, f_points, type, section_id];
+    "INSERT INTO component (id, name, weight, points, type, section_id, date) VALUES (?, ?, ?, ?, ?, ?, ?)";
+  const values = [id, name, f_weight, f_points, type, sectionId, date];
 
   db.query(query, values, (err, _) => {
     if (err) return res.json({ success: false });
@@ -42,12 +44,16 @@ router.put("/", (req, res) => {
   db.query(in_db_query, [id], (err, result: RowDataPacket[]) => {
     if (err) return res.json({ success: false });
     else {
-      if (!result.length) return res.json({ success: false });
-      db.query(update_query, [name, f_points, f_weight, name], (update_err, _) => {
-        if (update_err) {
-          return res.json({ success: false });
-        }
-      });
+      if (result.length === 0) return res.json({ success: false });
+      db.query(
+        update_query,
+        [name, f_points, f_weight, id],
+        (update_err, _) => {
+          if (update_err) {
+            return res.json({ success: false });
+          }
+        },
+      );
       return res.json({ success: true });
     }
   });
