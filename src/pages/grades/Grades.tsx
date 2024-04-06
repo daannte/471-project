@@ -207,6 +207,45 @@ function Grades() {
     return `${weight.toFixed(2)} / ${component.weight}`
   }
 
+  const calculateTentativeGrade = () => {
+    let tentativeGrade = 0;
+    let totalWeight: number = 0;
+
+    components.forEach((component) => {
+      if (component.points && component.weight) {
+        const grade = grades.find(
+          (grade) => component.id === grade.component_id && ucid === grade.ucid
+        )?.points || component.points;
+        
+        totalWeight += parseFloat(component.weight.toString())
+        tentativeGrade += (grade / component.points) * component.weight;
+      }
+    });
+
+    const remainingWeight = 100 - totalWeight
+    return (tentativeGrade + remainingWeight).toFixed(2);
+  }
+
+  const calculateCurrentGrade = () => {
+    let weightAchieved = 0;
+    let totalWeight: number = 0;
+
+    components.forEach((component) => {
+      if (component.points && component.weight) {
+        const grade = grades.find(
+          (grade) => component.id === grade.component_id && ucid === grade.ucid
+        )?.points;
+
+        if (grade !== undefined) {
+          weightAchieved += (grade / component.points) * component.weight;
+          totalWeight += parseFloat(component.weight.toString())
+        }
+      }
+    });
+
+    return ((weightAchieved / totalWeight) * 100).toFixed(2)
+  }
+
   return (
     <>
       <Navbar />
@@ -398,14 +437,14 @@ function Grades() {
           <>
             <div className="row">
               <div className="long-row">
-                <span>Achieved Grades</span>
-                <span className="grade">F</span>
+                <span>Current Grade</span>
+                <span className="grade">{calculateCurrentGrade()}</span>
               </div>
             </div>
             <div className="row">
               <div className="long-row">
-                <span>Tentative Grades</span>
-                <span className="grade">F</span>
+                <span>Tentative Grade</span>
+                <span className="grade">{calculateTentativeGrade()}</span>
               </div>
             </div>
           </>
