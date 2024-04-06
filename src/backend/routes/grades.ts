@@ -36,4 +36,17 @@ router.post("/", (req, res) => {
   } else return res.json("fail");
 });
 
+router.put("/", (req, res) => {
+  const { ucid, id, grade } = req.body;
+  const f_grade = parseFloat(grade);
+
+  const update_query =
+    "UPDATE grade SET points = ? WHERE ucid = ? AND component_id = ?";
+
+  db.query(update_query, [f_grade, ucid, id], (err) => {
+    if (err) return res.json({ success: false });
+    return res.json({ success: true });
+  });
+});
+
 export { router };
