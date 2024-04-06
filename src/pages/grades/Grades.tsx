@@ -230,19 +230,20 @@ function Grades() {
                   <>
                     <span>{assignment.name}</span>
                     <span>
-                      {grades.find(
-                        (grade) =>
-                          assignment?.id === grade.component_id &&
-                          ucid === grade.ucid,
-                      )?.points !== undefined
-                        ? `${
-                            grades.find(
-                              (grade) =>
-                                assignment?.id === grade.component_id &&
-                                ucid === grade.ucid,
-                            )?.points
-                          } / `
-                        : "- / "}
+                      {role !== "admin" &&
+                        (grades.find(
+                          (grade) =>
+                            assignment?.id === grade.component_id &&
+                            ucid === grade.ucid,
+                        )?.points !== undefined
+                          ? `${
+                              grades.find(
+                                (grade) =>
+                                  assignment?.id === grade.component_id &&
+                                  ucid === grade.ucid,
+                              )?.points
+                            } / `
+                          : "- / ")}
                       {assignment.points}
                     </span>
                     <span>{assignment.weight}</span>
@@ -326,19 +327,20 @@ function Grades() {
                   <>
                     <span>{exam.name}</span>
                     <span>
-                      {grades.find(
-                        (grade) =>
-                          exam?.id === grade.component_id &&
-                          ucid === grade.ucid,
-                      )?.points !== undefined
-                        ? `${
-                            grades.find(
-                              (grade) =>
-                                exam?.id === grade.component_id &&
-                                ucid === grade.ucid,
-                            )?.points
-                          } / `
-                        : "- / "}
+                      {role !== "admin" &&
+                        (grades.find(
+                          (grade) =>
+                            exam?.id === grade.component_id &&
+                            ucid === grade.ucid,
+                        )?.points !== undefined
+                          ? `${
+                              grades.find(
+                                (grade) =>
+                                  exam?.id === grade.component_id &&
+                                  ucid === grade.ucid,
+                              )?.points
+                            } / `
+                          : "- / ")}
                       {exam.points}
                     </span>
                     <span>{exam.weight}</span>

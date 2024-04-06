@@ -60,6 +60,28 @@ const GradeModal = ({
         ]);
 
         onClose();
+      } else {
+        const res1 = await axios.put("/api/grades", {
+          ucid,
+          id: component?.id,
+          grade,
+        });
+
+        if (res1.data.success) {
+          setGrades((prevGrades) => {
+            const updatedGrades = prevGrades.map((g) => {
+              if (g.component_id === component?.id) {
+                return {
+                  ...g,
+                  points: grade,
+                };
+              }
+              return g;
+            });
+            return updatedGrades;
+          });
+          onClose();
+        }
       }
     }
   };
