@@ -5,5 +5,6 @@ import { router as grades } from "./grades";
 import { router as components } from "./components";
 import { router as courses } from "./courses";
 import { router as sections } from "./sections";
+import { router as gradescale } from "./gradescale";
 
 export { users, login, grades, components, courses, sections };
