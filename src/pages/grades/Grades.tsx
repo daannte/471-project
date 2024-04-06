@@ -242,8 +242,8 @@ function Grades() {
         }
       }
     });
-
-    return ((weightAchieved / totalWeight) * 100).toFixed(2)
+    const currentGrade = totalWeight === 0 ? 0.00 : ((weightAchieved / totalWeight) * 100).toFixed(2)
+    return currentGrade
   }
 
   return (
