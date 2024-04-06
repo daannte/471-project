@@ -262,7 +262,6 @@ function Grades() {
                 +
               </button>
             )}
-            <span className="grade">F</span>
           </div>
         </div>
         {/* Render assignment rows */}
@@ -361,7 +360,6 @@ function Grades() {
                 +
               </button>
             )}
-            <span className="grade">F</span>
           </div>
         </div>
         {/* Render exam rows */}
@@ -472,7 +470,7 @@ function Grades() {
                       handleAddGrade(component, student.student_id)
                     }
                   >
-                    Add Grade
+                    Edit Grade
                   </button>
                 </div>
               ))}
