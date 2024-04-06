@@ -71,15 +71,42 @@ CREATE TABLE grade (
   FOREIGN KEY (component_id) REFERENCES component(id)
 );
 
--- Create the GRADEs_scale table
+-- Create the GRADESCALE table
 CREATE TABLE grade_scale (
-  letter VARCHAR(1) NOT NULL,
-  section_id INT NOT NULL, 
+  section_id INT NOT NULL,
+  letter VARCHAR(2) NOT NULL, 
   min_perc INT NOT NULL,
   max_perc INT NOT NULL,
-  PRIMARY KEY (letter),
+  PRIMARY KEY (letter, section_id),
   FOREIGN KEY (section_id) REFERENCES section(id)
 );
+
+INSERT INTO grade_scale (section_id, letter, min_perc, max_perc) VALUES 
+(1, 'A+', 95, 100),
+(1, 'A', 90, 95),
+(1, 'A-', 85, 90),
+(1, 'B+', 80, 85),
+(1, 'B', 75, 80),
+(1, 'B-', 70, 75),
+(1, 'C+', 65, 70),
+(1, 'C', 60, 65),
+(1, 'C-', 55, 60),
+(1, 'D+', 50, 55),
+(1, 'D', 45, 50),
+(1, 'F', 0, 45),
+(2, 'A+', 95, 100),
+(2, 'A', 90, 95),
+(2, 'A-', 86, 90),
+(2, 'B+', 82, 86),
+(2, 'B', 78, 82),
+(2, 'B-', 74, 78),
+(2, 'C+', 70, 74),
+(2, 'C', 66, 70),
+(2, 'C-', 62, 66),
+(2, 'D+', 58, 62),
+(2, 'D', 50, 58),
+(2, 'F', 0, 50);
+
 
 -- Create IN table
 CREATE TABLE sins  (
