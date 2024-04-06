@@ -192,6 +192,21 @@ function Grades() {
     setGradeModalOpen(true);
   };
 
+  const calculateWeight = (component: Component) => {
+    const given_grade = grades.find(
+      (grade) =>
+        component?.id === grade.component_id &&
+        ucid === grade.ucid,
+    )?.points
+
+    if (given_grade === undefined || component.points === null || component.weight === null) {
+      return `- / ${component.weight}`
+    }
+   
+    const weight = (given_grade / component.points) * component.weight
+    return `${weight.toFixed(2)} / ${component.weight}`
+  }
+
   return (
     <>
       <Navbar />
@@ -246,7 +261,7 @@ function Grades() {
                           : "- / ")}
                       {assignment.points}
                     </span>
-                    <span>{assignment.weight}</span>
+                    <span>{role === "admin" ? assignment.weight : calculateWeight(assignment)}</span>
                     {role === "admin" && (
                       <button onClick={() => handleEdit(assignment.id)}>
                         Edit
@@ -343,7 +358,7 @@ function Grades() {
                           : "- / ")}
                       {exam.points}
                     </span>
-                    <span>{exam.weight}</span>
+                    <span>{role === "admin" ? exam.weight : calculateWeight(exam)}</span>
                     {role === "admin" && (
                       <button onClick={() => handleEdit(exam.id)}>Edit</button>
                     )}
