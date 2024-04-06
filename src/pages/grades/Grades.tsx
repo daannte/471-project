@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./Grades.css";
 import Navbar from "@/components/navbar/Navbar";
+import GradeModal from "@/components/gradeModal/GradeModal";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 
@@ -10,15 +11,41 @@ interface Component {
   points: number | null;
   weight: number | null;
   sectionId: number | null;
+  type: string;
   date: Date | null;
   submitted?: boolean;
 }
 
+interface Student {
+  student_id: number;
+}
+
+interface Grades {
+  component_id: number;
+  points: number;
+  ucid: number;
+}
+
 function Grades() {
-  const [assignments, setAssignments] = useState<Component[]>([]);
-  const [exams, setExams] = useState<Component[]>([]);
+  const [components, setComponents] = useState<Component[]>([]);
   const [role, setRole] = useState<string | null>(null);
   const [sectionId, setSectionId] = useState<number | null>(null);
+  const [students, setStudents] = useState<Student[]>([]);
+  const [grades, setGrades] = useState<Grades[]>([]);
+  const [gradeModalOpen, setGradeModalOpen] = useState<boolean>(false);
+  const [selectedComponent, setSelectedComponent] = useState<Component | null>(
+    null,
+  );
+  const [selectedUcid, setSelectedUcid] = useState<number | null>(null);
+
+  const storedUcid = localStorage.getItem("ucid");
+  const [ucid, _] = useState<number | null>(
+    storedUcid ? parseInt(storedUcid) : null,
+  );
+  const [lastComponentId, setLastComponentId] = useState<number>(() => {
+    const storedId = localStorage.getItem("lastComponentId");
+    return storedId ? parseInt(storedId) : 0;
+  });
   const { course } = useParams();
 
   useEffect(() => {
@@ -26,12 +53,6 @@ function Grades() {
       try {
         const cname = course?.slice(0, 4);
         const cnum = course?.slice(4);
-        const ucid = localStorage.getItem("ucid");
-
-        const perm_res = await axios.get(
-          `/api/users?cname=${cname}&cnum=${cnum}&ucid=${ucid}`,
-        );
-        if (perm_res.data.length !== 0) setRole("admin");
 
         const section_res = await axios.get(
           `/api/sections?cname=${cname}&cnum=${cnum}`,
@@ -40,30 +61,34 @@ function Grades() {
         const section_id = section_res.data[0].id;
         if (section_id) setSectionId(section_id);
 
-        const assignments_res = await axios.get(
-          `/api/components?type=assignment&sectionId=${section_id}`,
+        const perm_res = await axios.get(
+          `/api/users?cname=${cname}&cnum=${cnum}&ucid=${ucid}`,
         );
-        const exams_res = await axios.get(
-          `/api/components?type=exam&sectionId=${section_id}`,
+        if (perm_res.data.length !== 0) {
+          setRole("admin");
+
+          const students_res = await axios.get(
+            `/api/grades?sectionId=${section_id}`,
+          );
+          setStudents(students_res.data);
+        }
+
+        const components_res = await axios.get(
+          `/api/components?sectionId=${section_id}`,
         );
 
-        if (assignments_res.data.length > 0) {
-          const assignments_submitted = assignments_res.data.map(
-            (assignment: Component) => ({
-              ...assignment,
+        if (components_res.data.length > 0) {
+          const allComponents = components_res.data.map(
+            (component: Component) => ({
+              ...component,
               submitted: true,
             }),
           );
-          setAssignments(assignments_submitted);
+          setComponents(allComponents);
         }
 
-        if (exams_res.data.length > 0) {
-          const exams_submitted = exams_res.data.map((exam: Component) => ({
-            ...exam,
-            submitted: true,
-          }));
-          setExams(exams_submitted);
-        }
+        const grades_res = await axios.get("/api/grades");
+        if (grades_res.data.length !== 0) setGrades(grades_res.data);
       } catch (err) {
         console.log(err);
       }
@@ -75,139 +100,103 @@ function Grades() {
   // Function to handle adding a new component row
   const handleAddComponent = (componentType: string) => {
     const newComponent: Component = {
-      id: exams.length + assignments.length,
+      id: lastComponentId,
       name: "",
       points: null,
       weight: null,
+      type: componentType,
       sectionId,
       date: null,
     };
 
-    if (componentType === "assignment") {
-      setAssignments((prevAssignments) => [...prevAssignments, newComponent]);
-    } else if (componentType === "exam") {
-      setExams((prevExams) => [...prevExams, newComponent]);
-    }
+    setLastComponentId((prevId) => prevId + 1);
+    setComponents((prevComponents) => [...prevComponents, newComponent]);
   };
+
+  useEffect(() => {
+    localStorage.setItem("lastComponentId", lastComponentId.toString());
+  }, [lastComponentId]);
 
   // Function to handle input change for component properties
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    index: number,
-    componentType: string,
+    id: number,
     property: string,
   ) => {
     const value = e.target.value;
-    if (componentType === "assignment") {
-      const updatedAssignments = [...assignments];
-      updatedAssignments[index] = {
-        ...updatedAssignments[index],
-        [property]: value,
-      };
-      setAssignments(updatedAssignments);
-    } else if (componentType === "exam") {
-      const updatedExams = [...exams];
-      updatedExams[index] = { ...updatedExams[index], [property]: value };
-      setExams(updatedExams);
-    }
+    const updatedComponents = components.map((component) =>
+      component.id === id ? { ...component, [property]: value } : component,
+    );
+    setComponents(updatedComponents);
   };
 
   // Function to handle submitting component data
-  const handleSubmit = async (index: number, componentType: string) => {
-    if (componentType === "assignment") {
-      const updatedAssignments = [...assignments];
-      const { name, points, weight } = updatedAssignments[index];
+  const handleSubmit = async (id: number) => {
+    const updatedComponent = components.find(
+      (component) => component.id === id,
+    );
+    if (!updatedComponent) return;
 
-      if (name && points && !isNaN(points) && weight && !isNaN(weight)) {
-        updatedAssignments[index].submitted = true;
-        const res = await axios.post("/api/components", {
-          component: updatedAssignments[index],
-          type: componentType,
+    const { name, points, weight, type } = updatedComponent;
+
+    if (name && points && !isNaN(points) && weight && !isNaN(weight)) {
+      const res = await axios.post("/api/components", {
+        component: updatedComponent,
+        type,
+      });
+
+      if (!res.data.success) {
+        const res1 = await axios.put("/api/components", {
+          component: updatedComponent,
         });
 
-        if (!res.data.success) {
-          console.log("Updating the component");
-          console.log(updatedAssignments[index]);
-          const res1 = await axios.put("/api/components", {
-            component: updatedAssignments[index],
-          });
-
-          if (res1) {
-            setAssignments(updatedAssignments);
-          }
-        } else {
-          setAssignments(updatedAssignments);
+        if (res1) {
+          const updatedComponents = components.map((component) =>
+            component.id === id ? { ...component, submitted: true } : component,
+          );
+          setComponents(updatedComponents);
         }
-      }
-    } else if (componentType === "exam") {
-      const updatedExams = [...exams];
-      const { name, points, weight } = updatedExams[index];
-
-      if (name && points && !isNaN(points) && weight && !isNaN(weight)) {
-        updatedExams[index].submitted = true;
-        const res = await axios.post("/api/components", {
-          component: updatedExams[index],
-          type: componentType,
-        });
-
-        if (!res.data.success) {
-          const res1 = await axios.put("/api/components", {
-            component: updatedExams[index],
-          });
-
-          if (res1) {
-            setExams(updatedExams);
-          }
-        } else {
-          setExams(updatedExams);
-        }
+      } else {
+        const updatedComponents = components.map((component) =>
+          component.id === id ? { ...component, submitted: true } : component,
+        );
+        setComponents(updatedComponents);
       }
     }
   };
 
-  // Function to handle editing a submitted row
-  const handleEdit = (index: number, componentType: string) => {
-    // Set the 'submitted' property to false to allow editing
-    if (componentType === "assignment") {
-      const updatedAssignments = [...assignments];
-      updatedAssignments[index].submitted = false;
-      setAssignments(updatedAssignments);
-    } else if (componentType === "exam") {
-      const updatedExams = [...exams];
-      updatedExams[index].submitted = false;
-      setExams(updatedExams);
-    }
+  const handleEdit = (id: number) => {
+    const updatedComponents = components.map((component) =>
+      component.id === id ? { ...component, submitted: false } : component,
+    );
+    setComponents(updatedComponents);
   };
 
   // Function to handle deleting a row
-  const handleDelete = async (index: number, componentType: string) => {
-    if (componentType === "assignment") {
-      const updatedAssignments = [...assignments];
-      const res = await axios.delete("/api/components", {
-        data: { id: updatedAssignments[index].id },
-      });
+  const handleDelete = async (id: number) => {
+    const res = await axios.delete("/api/components", {
+      data: { id },
+    });
 
-      if (res.data.success) {
-        updatedAssignments.splice(index, 1);
-        setAssignments(updatedAssignments);
-      }
-    } else if (componentType === "exam") {
-      const updatedExams = [...exams];
-      const res = await axios.delete("/api/components", {
-        data: { id: updatedExams[index].id },
-      });
-
-      if (res.data.success) {
-        updatedExams.splice(index, 1);
-        setExams(updatedExams);
-      }
+    if (res.data.success) {
+      const updatedComponents = components.filter(
+        (component) => component.id !== id,
+      );
+      setComponents(updatedComponents);
     }
+  };
+
+  const handleAddGrade = (component: Component, ucid: number) => {
+    setSelectedComponent(component);
+    setSelectedUcid(ucid);
+    setGradeModalOpen(true);
   };
 
   return (
     <>
       <Navbar />
       <div className="grades-container">
+        {/* Assignments Section */}
         <div className="row">
           <div className="long-row">
             <span>Assignments</span>
@@ -223,64 +212,89 @@ function Grades() {
           </div>
         </div>
         {/* Render assignment rows */}
-        {assignments.map((assignment, index) => (
-          <div className="row" key={index} style={{ backgroundColor: "white" }}>
+        {components
+          .filter((component) => component.type === "assignment")
+          .map((assignment, index) => (
             <div
-              className={
-                assignment.submitted ? "long-row submitted" : "long-row"
-              }
+              className="row"
+              key={index}
               style={{ backgroundColor: "white" }}
             >
-              {assignment.submitted ? (
-                <>
-                  <span>{assignment.name}</span>
-                  <span>{assignment.points}</span>
-                  <span>{assignment.weight}</span>
-                  <button onClick={() => handleEdit(index, "assignment")}>
-                    Edit
-                  </button>
-                </>
-              ) : (
-                <>
-                  <input
-                    type="text"
-                    value={assignment.name}
-                    onChange={(e) =>
-                      handleInputChange(e, index, "assignment", "name")
-                    }
-                    placeholder="Name"
-                  />
-                  <input
-                    type="text"
-                    value={
-                      assignment.points ? assignment.points.toString() : ""
-                    }
-                    onChange={(e) =>
-                      handleInputChange(e, index, "assignment", "points")
-                    }
-                    placeholder="Points"
-                  />
-                  <input
-                    type="text"
-                    value={
-                      assignment.weight ? assignment.weight.toString() : ""
-                    }
-                    onChange={(e) =>
-                      handleInputChange(e, index, "assignment", "weight")
-                    }
-                    placeholder="Weight"
-                  />
-                  <button onClick={() => handleSubmit(index, "assignment")}>
-                    Submit
-                  </button>
-                  <button onClick={() => handleDelete(index, "assignment")}>
-                    Delete
-                  </button>
-                </>
-              )}
+              <div
+                className={
+                  assignment.submitted ? "long-row submitted" : "long-row"
+                }
+                style={{ backgroundColor: "white" }}
+              >
+                {assignment.submitted ? (
+                  <>
+                    <span>{assignment.name}</span>
+                    <span>
+                      {grades.find(
+                        (grade) =>
+                          assignment?.id === grade.component_id &&
+                          ucid === grade.ucid,
+                      )?.points !== undefined
+                        ? `${
+                            grades.find(
+                              (grade) =>
+                                assignment?.id === grade.component_id &&
+                                ucid === grade.ucid,
+                            )?.points
+                          }/`
+                        : ""}
+                      {assignment.points}
+                    </span>
+                    <span>{assignment.weight}</span>
+                    {role === "admin" && (
+                      <button onClick={() => handleEdit(assignment.id)}>
+                        Edit
+                      </button>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <input
+                      type="text"
+                      value={assignment.name}
+                      onChange={(e) =>
+                        handleInputChange(e, assignment.id, "name")
+                      }
+                      placeholder="Name"
+                    />
+                    <input
+                      type="text"
+                      value={
+                        assignment.points ? assignment.points.toString() : ""
+                      }
+                      onChange={(e) =>
+                        handleInputChange(e, assignment.id, "points")
+                      }
+                      placeholder="Points"
+                    />
+                    <input
+                      type="text"
+                      value={
+                        assignment.weight ? assignment.weight.toString() : ""
+                      }
+                      onChange={(e) =>
+                        handleInputChange(e, assignment.id, "weight")
+                      }
+                      placeholder="Weight"
+                    />
+                    <button onClick={() => handleSubmit(assignment.id)}>
+                      Submit
+                    </button>
+                    <button onClick={() => handleDelete(assignment.id)}>
+                      Delete
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+
+        {/* Exams Section */}
         <div className="row">
           <div className="long-row">
             <span>Exams</span>
@@ -296,71 +310,128 @@ function Grades() {
           </div>
         </div>
         {/* Render exam rows */}
-        {exams.map((exam, index) => (
-          <div className="row" key={index} style={{ backgroundColor: "white" }}>
+        {components
+          .filter((component) => component.type === "exam")
+          .map((exam, index) => (
             <div
-              className={exam.submitted ? "long-row submitted" : "long-row"}
+              className="row"
+              key={index}
               style={{ backgroundColor: "white" }}
             >
-              {exam.submitted ? (
-                <>
-                  <span>{exam.name}</span>
-                  <span>{exam.points}</span>
-                  <span>{exam.weight}</span>
-                  <button onClick={() => handleEdit(index, "exam")}>
-                    Edit
-                  </button>
-                </>
-              ) : (
-                <>
-                  <input
-                    type="text"
-                    value={exam.name}
-                    onChange={(e) =>
-                      handleInputChange(e, index, "exam", "name")
+              <div
+                className={exam.submitted ? "long-row submitted" : "long-row"}
+                style={{ backgroundColor: "white" }}
+              >
+                {exam.submitted ? (
+                  <>
+                    <span>{exam.name}</span>
+                    <span>
+                      {grades.find(
+                        (grade) =>
+                          exam?.id === grade.component_id &&
+                          ucid === grade.ucid,
+                      )?.points !== undefined
+                        ? `${
+                            grades.find(
+                              (grade) =>
+                                exam?.id === grade.component_id &&
+                                ucid === grade.ucid,
+                            )?.points
+                          }/`
+                        : ""}
+                      {exam.points}
+                    </span>
+                    <span>{exam.weight}</span>
+                    {role === "admin" && (
+                      <button onClick={() => handleEdit(exam.id)}>Edit</button>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <input
+                      type="text"
+                      value={exam.name}
+                      onChange={(e) => handleInputChange(e, exam.id, "name")}
+                      placeholder="Name"
+                    />
+                    <input
+                      type="text"
+                      value={exam.points ? exam.points.toString() : ""}
+                      onChange={(e) => handleInputChange(e, exam.id, "points")}
+                      placeholder="Points"
+                    />
+                    <input
+                      type="text"
+                      value={exam.weight ? exam.weight.toString() : ""}
+                      onChange={(e) => handleInputChange(e, exam.id, "weight")}
+                      placeholder="Weight"
+                    />
+                    <button onClick={() => handleSubmit(exam.id)}>
+                      Submit
+                    </button>
+                    <button onClick={() => handleDelete(exam.id)}>
+                      Delete
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+          ))}
+        {role !== "admin" && (
+          <>
+            <div className="row">
+              <div className="long-row">
+                <span>Achieved Grades</span>
+                <span className="grade">F</span>
+              </div>
+            </div>
+            <div className="row">
+              <div className="long-row">
+                <span>Tentative Grades</span>
+                <span className="grade">F</span>
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+      <div className="student__table">
+        {students.map((student, index) => (
+          <div className="student__container" key={index}>
+            {student.student_id}
+            <div className="student__components">
+              {components.map((component, index) => (
+                <div key={index} className="student__component">
+                  <div className="student__component-name">
+                    {component.name}
+                  </div>
+                  <div className="student__component-grade">
+                    {
+                      grades.find(
+                        (grade) => component.id === grade.component_id,
+                      )?.points
                     }
-                    placeholder="Name"
-                  />
-                  <input
-                    type="text"
-                    value={exam.points ? exam.points.toString() : ""}
-                    onChange={(e) =>
-                      handleInputChange(e, index, "exam", "points")
+                  </div>
+                  <button
+                    onClick={() =>
+                      handleAddGrade(component, student.student_id)
                     }
-                    placeholder="Points"
-                  />
-                  <input
-                    type="text"
-                    value={exam.weight ? exam.weight.toString() : ""}
-                    onChange={(e) =>
-                      handleInputChange(e, index, "exam", "weight")
-                    }
-                    placeholder="Weight"
-                  />
-                  <button onClick={() => handleSubmit(index, "exam")}>
-                    Submit
+                  >
+                    Add Grade
                   </button>
-                  <button onClick={() => handleDelete(index, "exam")}>
-                    Delete
-                  </button>
-                </>
-              )}
+                </div>
+              ))}
             </div>
           </div>
         ))}
-        <div className="row">
-          <div className="long-row">
-            <span>Achieved Grades</span>
-            <span className="grade">F</span>
-          </div>
-        </div>
-        <div className="row">
-          <div className="long-row">
-            <span>Tentative Grades</span>
-            <span className="grade">F</span>
-          </div>
-        </div>
       </div>
+      <GradeModal
+        isOpen={gradeModalOpen}
+        onClose={() => setGradeModalOpen(false)}
+        component={selectedComponent}
+        ucid={selectedUcid}
+        setGrades={setGrades}
+        grades={grades}
+      />
     </>
   );
 }

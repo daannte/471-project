@@ -4,11 +4,10 @@ import { RowDataPacket } from "mysql2";
 const router = express.Router();
 
 router.get("/", (req, res) => {
-  const { type, sectionId } = req.query;
+  const { sectionId } = req.query;
 
   let query = "SELECT * FROM component";
-  if (type) query += ` WHERE type = '${type}'`;
-  if (sectionId) query += ` AND section_id = ${sectionId}`;
+  if (sectionId) query += ` WHERE section_id = ${sectionId}`;
 
   db.query(query, (err, data) => {
     if (err) return res.json(`Error fetching from table: ${err}`);
@@ -61,12 +60,17 @@ router.put("/", (req, res) => {
 
 router.delete("/", (req, res) => {
   const id = req.body.id;
-
+  const grade_query = "DELETE FROM grade WHERE component_id = ?";
   const query = "DELETE FROM component WHERE id = ?";
 
-  db.query(query, [id], (err) => {
+  db.query(grade_query, [id], (err) => {
     if (err) return res.json({ success: false });
-    return res.json({ success: true });
+    else {
+      db.query(query, [id], (err) => {
+        if (err) return res.json({ success: false });
+        return res.json({ success: true });
+      });
+    }
   });
 });
 

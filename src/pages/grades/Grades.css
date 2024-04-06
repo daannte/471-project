@@ -47,3 +47,33 @@
   flex: 1; /* Equal width distribution */
   margin: 0 5px; /* Adjust spacing between spans */
 }
+
+.student__container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 4rem;
+}
+
+.student__components {
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.student__component {
+  display: flex;
+}
+
+.student__component-name {
+  margin-right: 1rem;
+}
+
+.student__component-grade {
+  margin-right: 1rem;
+}
+
