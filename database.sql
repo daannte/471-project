@@ -66,7 +66,7 @@ CREATE TABLE component (
 CREATE TABLE grade (
   ucid INT NOT NULL,
   component_id INT NOT NULL,
-  points INT NOT NULL,
+  points DECIMAL(10, 2) NOT NULL,
   PRIMARY KEY (ucid, component_id),
   FOREIGN KEY (component_id) REFERENCES component(id)
 );
