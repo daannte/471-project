@@ -192,6 +192,60 @@ function Grades() {
     setGradeModalOpen(true);
   };
 
+  const calculateWeight = (component: Component) => {
+    const given_grade = grades.find(
+      (grade) =>
+        component?.id === grade.component_id &&
+        ucid === grade.ucid,
+    )?.points
+
+    if (given_grade === undefined || component.points === null || component.weight === null) {
+      return `- / ${component.weight}`
+    }
+   
+    const weight = (given_grade / component.points) * component.weight
+    return `${weight.toFixed(2)} / ${component.weight}`
+  }
+
+  const calculateTentativeGrade = () => {
+    let tentativeGrade = 0;
+    let totalWeight: number = 0;
+
+    components.forEach((component) => {
+      if (component.points && component.weight) {
+        const grade = grades.find(
+          (grade) => component.id === grade.component_id && ucid === grade.ucid
+        )?.points || component.points;
+        
+        totalWeight += parseFloat(component.weight.toString())
+        tentativeGrade += (grade / component.points) * component.weight;
+      }
+    });
+
+    const remainingWeight = 100 - totalWeight
+    return (tentativeGrade + remainingWeight).toFixed(2);
+  }
+
+  const calculateCurrentGrade = () => {
+    let weightAchieved = 0;
+    let totalWeight: number = 0;
+
+    components.forEach((component) => {
+      if (component.points && component.weight) {
+        const grade = grades.find(
+          (grade) => component.id === grade.component_id && ucid === grade.ucid
+        )?.points;
+
+        if (grade !== undefined) {
+          weightAchieved += (grade / component.points) * component.weight;
+          totalWeight += parseFloat(component.weight.toString())
+        }
+      }
+    });
+    const currentGrade = totalWeight === 0 ? 0.00 : ((weightAchieved / totalWeight) * 100).toFixed(2)
+    return currentGrade
+  }
+
   return (
     <>
       <Navbar />
@@ -208,7 +262,6 @@ function Grades() {
                 +
               </button>
             )}
-            <span className="grade">F</span>
           </div>
         </div>
         {/* Render assignment rows */}
@@ -246,7 +299,7 @@ function Grades() {
                           : "- / ")}
                       {assignment.points}
                     </span>
-                    <span>{assignment.weight}</span>
+                    <span>{role === "admin" ? assignment.weight : calculateWeight(assignment)}</span>
                     {role === "admin" && (
                       <button onClick={() => handleEdit(assignment.id)}>
                         Edit
@@ -307,7 +360,6 @@ function Grades() {
                 +
               </button>
             )}
-            <span className="grade">F</span>
           </div>
         </div>
         {/* Render exam rows */}
@@ -343,7 +395,7 @@ function Grades() {
                           : "- / ")}
                       {exam.points}
                     </span>
-                    <span>{exam.weight}</span>
+                    <span>{role === "admin" ? exam.weight : calculateWeight(exam)}</span>
                     {role === "admin" && (
                       <button onClick={() => handleEdit(exam.id)}>Edit</button>
                     )}
@@ -383,14 +435,14 @@ function Grades() {
           <>
             <div className="row">
               <div className="long-row">
-                <span>Achieved Grades</span>
-                <span className="grade">F</span>
+                <span>Current Grade</span>
+                <span className="grade">{calculateCurrentGrade()}</span>
               </div>
             </div>
             <div className="row">
               <div className="long-row">
-                <span>Tentative Grades</span>
-                <span className="grade">F</span>
+                <span>Tentative Grade</span>
+                <span className="grade">{calculateTentativeGrade()}</span>
               </div>
             </div>
           </>
@@ -418,7 +470,7 @@ function Grades() {
                       handleAddGrade(component, student.student_id)
                     }
                   >
-                    Add Grade
+                    Edit Grade
                   </button>
                 </div>
               ))}
