@@ -101,7 +101,6 @@ function Grades() {
           `/api/grade_scale?sectionId=${section_id}`,
         );
         setGradeScale(gradeScale_res.data);
-
       } catch (err) {
         console.log(err);
       }
@@ -207,18 +206,20 @@ function Grades() {
 
   const calculateWeight = (component: Component) => {
     const given_grade = grades.find(
-      (grade) =>
-        component?.id === grade.component_id &&
-        ucid === grade.ucid,
-    )?.points
+      (grade) => component?.id === grade.component_id && ucid === grade.ucid,
+    )?.points;
 
-    if (given_grade === undefined || component.points === null || component.weight === null) {
-      return `- / ${component.weight}`
+    if (
+      given_grade === undefined ||
+      component.points === null ||
+      component.weight === null
+    ) {
+      return `- / ${component.weight}`;
     }
-   
-    const weight = (given_grade / component.points) * component.weight
-    return `${weight.toFixed(2)} / ${component.weight}`
-  }
+
+    const weight = (given_grade / component.points) * component.weight;
+    return `${weight.toFixed(2)} / ${component.weight}`;
+  };
 
   const calculateTentativeGrade = () => {
     let tentativeGrade = 0;
@@ -226,18 +227,20 @@ function Grades() {
 
     components.forEach((component) => {
       if (component.points && component.weight) {
-        const grade = grades.find(
-          (grade) => component.id === grade.component_id && ucid === grade.ucid
-        )?.points || component.points;
-        
-        totalWeight += parseFloat(component.weight.toString())
+        const grade =
+          grades.find(
+            (grade) =>
+              component.id === grade.component_id && ucid === grade.ucid,
+          )?.points || component.points;
+
+        totalWeight += parseFloat(component.weight.toString());
         tentativeGrade += (grade / component.points) * component.weight;
       }
     });
 
-    const remainingWeight = 100 - totalWeight
+    const remainingWeight = 100 - totalWeight;
     return (tentativeGrade + remainingWeight).toFixed(2);
-  }
+  };
 
   const calculateCurrentGrade = () => {
     let weightAchieved = 0;
@@ -246,24 +249,28 @@ function Grades() {
     components.forEach((component) => {
       if (component.points && component.weight) {
         const grade = grades.find(
-          (grade) => component.id === grade.component_id && ucid === grade.ucid
+          (grade) => component.id === grade.component_id && ucid === grade.ucid,
         )?.points;
 
         if (grade !== undefined) {
           weightAchieved += (grade / component.points) * component.weight;
-          totalWeight += parseFloat(component.weight.toString())
+          totalWeight += parseFloat(component.weight.toString());
         }
       }
     });
-    const currentGrade = totalWeight === 0 ? 0.00 : ((weightAchieved / totalWeight) * 100).toFixed(2)
-    return currentGrade
-  }
+    const currentGrade =
+      totalWeight === 0
+        ? 0.0
+        : ((weightAchieved / totalWeight) * 100).toFixed(2);
+    return currentGrade;
+  };
 
   const getLetterGrade = (percentage: number): string => {
     const grade = gradeScale.find(
-      (letter) => percentage >= letter.min_perc && percentage <= letter.max_perc
+      (letter) =>
+        percentage >= letter.min_perc && percentage <= letter.max_perc,
     );
-    return grade ? grade.letter : '';
+    return grade ? grade.letter : "";
   };
 
   return (
@@ -319,7 +326,11 @@ function Grades() {
                           : "- / ")}
                       {assignment.points}
                     </span>
-                    <span>{role === "admin" ? assignment.weight : calculateWeight(assignment)}</span>
+                    <span>
+                      {role === "admin"
+                        ? assignment.weight
+                        : calculateWeight(assignment)}
+                    </span>
                     {role === "admin" && (
                       <button onClick={() => handleEdit(assignment.id)}>
                         Edit
@@ -415,7 +426,9 @@ function Grades() {
                           : "- / ")}
                       {exam.points}
                     </span>
-                    <span>{role === "admin" ? exam.weight : calculateWeight(exam)}</span>
+                    <span>
+                      {role === "admin" ? exam.weight : calculateWeight(exam)}
+                    </span>
                     {role === "admin" && (
                       <button onClick={() => handleEdit(exam.id)}>Edit</button>
                     )}
@@ -481,7 +494,9 @@ function Grades() {
                   <div className="student__component-grade">
                     {
                       grades.find(
-                        (grade) => component.id === grade.component_id,
+                        (grade) =>
+                          component.id === grade.component_id &&
+                          grade.ucid === student.student_id,
                       )?.points
                     }
                   </div>
