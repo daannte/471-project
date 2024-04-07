@@ -16,6 +16,9 @@ CREATE TABLE user (
 
 INSERT INTO user (ucid, full_name, email, password) VALUES 
 (123456789, "Student Test", "student@test.com", "student123"),
+(30113704, "Zoe Kirsman", "zoe.kirsman@ucalgary.ca", "student123"),
+(30120778, "Dante Kirsman", "dante.kirsman@ucalgary.ca", "student123"),
+(30161346, "Arian Safari", "arian.safari@ucalgary.ca", "student123"),
 (987654321, "Professor Test", "professor@test.com", "professor123");
 
 -- Create the COURSE table
@@ -119,4 +122,9 @@ CREATE TABLE sins  (
 
 INSERT INTO sins (student_id, section_id) VALUES 
 (123456789, 1),
-(123456789, 2);
+(123456789, 2),
+(30161346, 1),
+(30161346, 2),
+(30120778, 1),
+(30120778, 2),
+(30113704, 1);
