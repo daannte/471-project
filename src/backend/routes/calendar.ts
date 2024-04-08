@@ -20,7 +20,7 @@ router.get("/", (req, res) => {
             SELECT id, course_name, course_num
             FROM section
             WHERE ta_id = ? OR instr_id = ?
-        ) AS sections ON component.id = sections.id;
+        ) AS sections ON component.section_id = sections.id;
         `;
       queryParams = [ucid, ucid, ucid];
     } else {
