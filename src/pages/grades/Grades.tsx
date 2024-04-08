@@ -27,14 +27,14 @@ interface Grades {
   ucid: number;
 }
 
-// interface GradeScale {
-//   letter: string;
-//   min_perc: number;
-//   max_perc: number;
-// }
+interface GradeScale {
+  letter: string;
+  min_perc: number;
+  max_perc: number;
+}
 
 function Grades() {
-  // const [gradeScale, setGradeScale] = useState<GradeScale[]>([]);
+  const [gradeScale, setGradeScale] = useState<GradeScale[]>([]);
   const [components, setComponents] = useState<Component[]>([]);
   const [role, setRole] = useState<string | null>(null);
   const [sectionId, setSectionId] = useState<number | null>(null);
@@ -111,14 +111,13 @@ function Grades() {
           setComponents(allComponents);
         }
 
-        const grades_res = await axios.get("/api/grades");
-        if (grades_res.data.length !== 0) setGrades(grades_res.data);
+        const gradeScale_res = await axios.get(
+          `/api/gradescale?sectionId=${section_id}`,
+        );
+        setGradeScale(gradeScale_res.data);
 
-        // const gradeScale_res = await axios.get(
-        //   `/api/grade_scale?sectionId=${section_id}`,
-        // );
-        // setGradeScale(gradeScale_res.data);
-        //
+        const grades_res = await axios.get(`/api/grades`);
+        setGrades(grades_res.data);
       } catch (err) {
         console.log(err);
       }
@@ -214,9 +213,7 @@ function Grades() {
 
   // Function to handle deleting a row
   const handleDelete = async (id: number) => {
-    const res = await axios.delete("/api/components", {
-      data: { id },
-    });
+    const res = await axios.delete(`/api/components/${id}`);
 
     if (res.data.success) {
       const updatedComponents = components.filter(
@@ -288,18 +285,18 @@ function Grades() {
     });
     const currentGrade =
       totalWeight === 0
-        ? 0.0
+        ? ""
         : ((weightAchieved / totalWeight) * 100).toFixed(2);
     return currentGrade;
   };
 
-  // const getLetterGrade = (percentage: number): string => {
-  //   const grade = gradeScale.find(
-  //     (letter) =>
-  //       percentage >= letter.min_perc && percentage <= letter.max_perc,
-  //   );
-  //   return grade ? grade.letter : "";
-  // };
+  const getLetterGrade = (percentage: number): string => {
+    const grade = gradeScale.find(
+      (letter) =>
+        percentage >= letter.min_perc && percentage <= letter.max_perc,
+    );
+    return grade ? grade.letter : "";
+  };
 
   return (
     <>
@@ -560,13 +557,21 @@ function Grades() {
             <div className="row">
               <div className="long-row">
                 <span>Current Grade</span>
-                <span className="grade">{calculateCurrentGrade()}</span>
+                <span className="grade">
+                  {calculateCurrentGrade() ? calculateCurrentGrade() : 0}
+                </span>
+                <span className="letter">
+                  {getLetterGrade(parseFloat(calculateCurrentGrade()))}
+                </span>
               </div>
             </div>
             <div className="row">
               <div className="long-row">
                 <span>Tentative Grade</span>
                 <span className="grade">{calculateTentativeGrade()}</span>
+                <span className="letter">
+                  {getLetterGrade(parseFloat(calculateTentativeGrade()))}
+                </span>
               </div>
             </div>
           </>

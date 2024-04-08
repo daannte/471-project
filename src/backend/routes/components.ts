@@ -47,8 +47,8 @@ router.put("/", (req, res) => {
   });
 });
 
-router.delete("/", (req, res) => {
-  const id = req.body.id;
+router.delete("/:id", (req, res) => {
+  const id = req.params.id;
   const grade_query = "DELETE FROM grade WHERE component_id = ?";
   const query = "DELETE FROM component WHERE id = ?";
 

@@ -41,4 +41,15 @@ router.put("/", (req, res) => {
   });
 });
 
+router.delete("/:id", (req, res) => {
+  const id = req.params.id;
+
+  const query = "DELETE FROM addedEvent WHERE id = ?";
+
+  db.query(query, [id], (err, _) => {
+    if (err) return res.json({ success: false });
+    return res.json({ success: true });
+  });
+});
+
 export { router };

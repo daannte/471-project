@@ -43,7 +43,7 @@ const GradeModal = ({
   };
 
   const handleSubmit = async () => {
-    if (grade && !isNaN(grade)) {
+    if (grade !== null && !isNaN(grade)) {
       const res = await axios.post("/api/grades", {
         ucid,
         id: component?.id,

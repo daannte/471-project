@@ -43,6 +43,7 @@ function CalendarPage() {
         const userEventsRes = await axios.get(`/api/events?ucid=${ucid}`);
 
         const eventsData = eventsRes.data.map((item: any) => ({
+          ...item,
           date: new Date(item.date).toLocaleDateString(),
           time: new Date(item.date).toLocaleTimeString([], {
             hour: "2-digit",
@@ -54,6 +55,7 @@ function CalendarPage() {
         }));
 
         const userEventsData = userEventsRes.data.map((item: any) => ({
+          ...item,
           date: new Date(item.date).toLocaleDateString(),
           time: new Date(item.date).toLocaleTimeString([], {
             hour: "2-digit",
@@ -111,10 +113,12 @@ function CalendarPage() {
     }
   };
 
-  const handleDeleteEvent = (index: number) => {
-    const updatedEvents = [...events];
-    updatedEvents.splice(index, 1);
-    setEvents(updatedEvents);
+  const handleDeleteEvent = async (id: number) => {
+    const res = await axios.delete(`/api/events/${id}`);
+    if (res.data.success) {
+      const updatedEvents = events.filter((event) => event.id !== id);
+      setEvents(updatedEvents);
+    }
   };
 
   const tileContent = ({ date, view }: { date: Date; view: string }) => {
@@ -178,7 +182,7 @@ function CalendarPage() {
                           component: false,
                         })
                       }
-                      onDelete={() => handleDeleteEvent(index)}
+                      onDelete={() => handleDeleteEvent(event.id)}
                     />
                   ))}
               </ul>
