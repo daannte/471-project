@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Calendar from "react-calendar";
 import AddEventForm from "@/components/addEventForm/addEventForm";
 import EventItem from "@/components/EventItem/EventItem";
@@ -23,6 +23,25 @@ function getSemester(date: Date): string {
 function CalendarPage() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [events, setEvents] = useState<Event[]>([]);
+
+  useEffect(() => {
+    // Fetch components from the API
+    const ucid = localStorage.getItem("ucid");
+    if (ucid) {
+      fetch(`/api/calendar?ucid=${ucid}`)
+        .then((res) => res.json())
+        .then((data) => {
+          const fetchedEvents = data.map((item: any) => ({
+            date: new Date(item.date),
+            title: `${item.course_name} - ${item.course_num}: ${item.name}`,
+          }));
+          setEvents(fetchedEvents);
+        })
+        .catch((error) => {
+          console.error("Error fetching events:", error);
+        });
+    }
+  }, []);
 
   const handleDateClick = (date: Date) => {
     setSelectedDate(date);
@@ -54,7 +73,6 @@ function CalendarPage() {
     return null;
   };
 
-  // Filter events happening this week, this month, and this semester
   const today = new Date();
   const thisWeekEvents = events.filter(
     (event) =>
