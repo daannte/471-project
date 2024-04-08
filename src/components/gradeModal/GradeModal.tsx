@@ -8,7 +8,8 @@ interface Component {
   points: number | null;
   weight: number | null;
   sectionId: number | null;
-  date: Date | null;
+  date: string;
+  time: string;
   submitted?: boolean;
 }
 

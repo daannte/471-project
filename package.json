@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "dev:backend": "nodemon --watch ./src/backend/main.ts --exec 'npx tsx' ./src/backend/main.ts",
+    "dev:backend": "nodemon --watch ./src/backend --exec 'npx tsx' ./src/backend/main.ts",
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"

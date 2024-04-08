@@ -10,20 +10,23 @@ router.get("/", (req, res) => {
   if (sectionId) query += ` WHERE section_id = ${sectionId}`;
 
   db.query(query, (err, data) => {
+    console.log(data);
     if (err) return res.json(`Error fetching from table: ${err}`);
     return res.json(data);
   });
 });
 
 router.post("/", (req, res) => {
-  const { id, name, points, weight, sectionId, date } = req.body.component;
+  const { id, name, points, weight, sectionId, date, time } =
+    req.body.component;
   const type = req.body.type;
   const f_points = parseFloat(points);
   const f_weight = parseFloat(weight);
+  const datetime = new Date(`${date} ${time}:00`);
 
   const query =
     "INSERT INTO component (id, name, weight, points, type, section_id, date) VALUES (?, ?, ?, ?, ?, ?, ?)";
-  const values = [id, name, f_weight, f_points, type, sectionId, date];
+  const values = [id, name, f_weight, f_points, type, sectionId, datetime];
 
   db.query(query, values, (err, _) => {
     if (err) return res.json({ success: false });
@@ -32,29 +35,17 @@ router.post("/", (req, res) => {
 });
 
 router.put("/", (req, res) => {
-  const { id, name, points, weight } = req.body.component;
+  const { id, name, points, weight, date, time } = req.body.component;
   const f_points = parseFloat(points);
   const f_weight = parseFloat(weight);
+  const datetime = new Date(`${date} ${time}:00`);
 
-  const in_db_query = "SELECT * FROM component WHERE id = ?";
-  const update_query =
-    "UPDATE component SET name = ?, points = ?, weight = ? WHERE id = ?";
+  const query =
+    "UPDATE component SET name = ?, points = ?, weight = ?, date = ? WHERE id = ?";
 
-  db.query(in_db_query, [id], (err, result: RowDataPacket[]) => {
+  db.query(query, [name, f_points, f_weight, datetime, id], (err, _) => {
     if (err) return res.json({ success: false });
-    else {
-      if (result.length === 0) return res.json({ success: false });
-      db.query(
-        update_query,
-        [name, f_points, f_weight, id],
-        (update_err, _) => {
-          if (update_err) {
-            return res.json({ success: false });
-          }
-        },
-      );
-      return res.json({ success: true });
-    }
+    return res.json({ success: true });
   });
 });
 
