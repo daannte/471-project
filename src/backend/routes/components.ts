@@ -9,7 +9,6 @@ router.get("/", (req, res) => {
   if (sectionId) query += ` WHERE section_id = ${sectionId}`;
 
   db.query(query, (err, data) => {
-    console.log(data);
     if (err) return res.json(`Error fetching from table: ${err}`);
     return res.json(data);
   });

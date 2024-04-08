@@ -119,8 +119,6 @@ function Grades() {
         // );
         // setGradeScale(gradeScale_res.data);
         //
-        const calendar_res = await axios.get(`/api/calendar?ucid=${ucid}`);
-        console.log(calendar_res.data);
       } catch (err) {
         console.log(err);
       }
