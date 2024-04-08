@@ -7,6 +7,7 @@ import Navbar from "@/components/navbar/Navbar";
 import axios from "axios";
 
 interface Event {
+  id: number;
   date: string;
   time: string;
   title: string;
@@ -26,43 +27,88 @@ function getSemester(date: Date): string {
 function CalendarPage() {
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [events, setEvents] = useState<Event[]>([]);
+  const [lastId, setLastId] = useState<number>(() => {
+    const storedId = localStorage.getItem("lastId");
+    return storedId ? parseInt(storedId) : 0;
+  });
+  const storedUcid = localStorage.getItem("ucid");
+  const [ucid, _] = useState<number | null>(
+    storedUcid ? parseInt(storedUcid) : null,
+  );
 
   useEffect(() => {
     const fetchData = async () => {
-      const ucid = localStorage.getItem("ucid");
-      const events_res = await axios.get(`/api/calendar?ucid=${ucid}`);
+      try {
+        const eventsRes = await axios.get(`/api/calendar?ucid=${ucid}`);
+        const userEventsRes = await axios.get(`/api/events?ucid=${ucid}`);
 
-      const events = events_res.data.map((item: any) => {
-        const date = new Date(item.date).toLocaleDateString();
-        const time = new Date(item.date).toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: false,
-        });
-        return {
-          date,
-          time,
+        const eventsData = eventsRes.data.map((item: any) => ({
+          date: new Date(item.date).toLocaleDateString(),
+          time: new Date(item.date).toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+          }),
           title: `${item.course_name}${item.course_num} - ${item.name}`,
           component: true,
-        };
-      });
-      setEvents(events);
+        }));
+
+        const userEventsData = userEventsRes.data.map((item: any) => ({
+          date: new Date(item.date).toLocaleDateString(),
+          time: new Date(item.date).toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+          }),
+          title: item.name,
+          component: false,
+        }));
+
+        const combinedEvents = [...eventsData, ...userEventsData];
+        setEvents(combinedEvents);
+      } catch (error) {
+        console.error("Error fetching events:", error);
+      }
     };
     fetchData();
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem("lastId", lastId.toString());
+  }, [lastId]);
 
   const handleDateClick = (date: Date) => {
     setSelectedDate(date.toLocaleDateString());
   };
 
-  const handleAddEvent = (date: string, title: string, time: string) => {
-    setEvents([...events, { date, time, title, component: false }]);
+  const handleAddEvent = async (date: string, title: string, time: string) => {
+    const res = await axios.post(`/api/events?ucid=${ucid}`, {
+      id: lastId,
+      date,
+      time,
+      title,
+    });
+
+    if (res.data.success) {
+      setEvents([
+        ...events,
+        { id: lastId, date, time, title, component: false },
+      ]);
+      setLastId((prevId) => prevId + 1);
+    }
   };
 
-  const handleUpdateEvent = (index: number, updatedEvent: Event) => {
-    const updatedEvents = [...events];
-    updatedEvents[index] = updatedEvent;
-    setEvents(updatedEvents);
+  const handleUpdateEvent = async (updatedEvent: Event) => {
+    const index = events.findIndex((event) => event.id === updatedEvent.id);
+
+    if (index !== -1) {
+      const res = await axios.put("/api/events", updatedEvent);
+      if (res.data.success) {
+        const updatedEvents = [...events];
+        updatedEvents[index] = updatedEvent;
+        setEvents(updatedEvents);
+      }
+    }
   };
 
   const handleDeleteEvent = (index: number) => {
@@ -124,7 +170,8 @@ function CalendarPage() {
                       title={event.title}
                       component={event.component}
                       onUpdateEvent={(updatedDate, updatedTitle, updatedTime) =>
-                        handleUpdateEvent(index, {
+                        handleUpdateEvent({
+                          id: event.id,
                           date: updatedDate,
                           time: updatedTime,
                           title: updatedTitle,

@@ -32,8 +32,10 @@ function EventItem({
   };
 
   const handleSaveEdit = () => {
-    onUpdateEvent(editedDate, editedTitle, editedTime);
-    setShowEditForm(false);
+    if (editedDate && editedTitle && editedTime) {
+      onUpdateEvent(editedDate, editedTitle, editedTime);
+      setShowEditForm(false);
+    }
   };
 
   return (

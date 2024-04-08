@@ -10,6 +10,7 @@ import {
   sections,
   calendar,
   gradescale,
+  events,
 } from "./routes";
 
 // Setup express
@@ -26,6 +27,7 @@ app.use("/api/courses", courses);
 app.use("/api/sections", sections);
 app.use("/api/calendar", calendar);
 app.use("/api/gradescale", gradescale);
+app.use("/api/events", events);
 
 // For endpoints that don't exist
 app.use("/api/*", (_, res) => {

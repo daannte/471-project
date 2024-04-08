@@ -130,9 +130,11 @@ INSERT INTO sins (student_id, section_id) VALUES
 (30113704, 1);
 
 -- Create added events table
-CREATE TABLE AddedEvent (
+CREATE TABLE addedEvent (
   id INT NOT NULL,
+  student_id INT NOT NULL,
   date DATETIME NOT NULL,
   name VARCHAR(50) NOT NULL, 
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
+  FOREIGN KEY (student_id) REFERENCES user(ucid)
 );

@@ -25,10 +25,12 @@ function AddEventForm({ onAddEvent }: Props) {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    onAddEvent(date, title, time);
-    setDate("");
-    setTitle("");
-    setTime("");
+    if (date && title && time) {
+      onAddEvent(date, title, time);
+      setDate("");
+      setTitle("");
+      setTime("");
+    }
   };
 
   return (
