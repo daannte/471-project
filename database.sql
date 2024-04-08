@@ -111,7 +111,7 @@ INSERT INTO grade_scale (section_id, letter, min_perc, max_perc) VALUES
 (2, 'F', 0, 50);
 
 
--- Create IN table
+-- Create SinS table
 CREATE TABLE sins  (
   student_id INT NOT NULL,
   section_id INT NOT NULL,
@@ -128,3 +128,11 @@ INSERT INTO sins (student_id, section_id) VALUES
 (30120778, 1),
 (30120778, 2),
 (30113704, 1);
+
+-- Create added events table
+CREATE TABLE AddedEvent (
+  id INT NOT NULL,
+  date DATETIME NOT NULL,
+  name VARCHAR(50) NOT NULL, 
+  PRIMARY KEY (id)
+);
