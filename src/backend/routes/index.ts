@@ -6,5 +6,6 @@ import { router as components } from "./components";
 import { router as courses } from "./courses";
 import { router as sections } from "./sections";
 import { router as gradescale } from "./gradescale";
+import { router as calendar } from "./calendar";
 
-export { users, login, grades, components, courses, sections };
+export { users, login, grades, components, courses, sections, gradescale, calendar };

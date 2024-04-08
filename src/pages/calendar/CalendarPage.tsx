@@ -10,6 +10,16 @@ interface Event {
   title: string;
 }
 
+function getSemester(date: Date): string {
+  const month = date.getMonth();
+  if (month >= 8 && month <= 11) {
+    return "Fall";
+  } else if (month >= 0 && month <= 3) {
+    return "Winter";
+  }
+  return "Unknown";
+}
+
 function CalendarPage() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [events, setEvents] = useState<Event[]>([]);
@@ -34,21 +44,31 @@ function CalendarPage() {
     setEvents(updatedEvents);
   };
 
-  // Filter events happening this week, this month, and this year
+  const tileContent = ({ date, view }: { date: Date; view: string }) => {
+    if (view === 'month') {
+      const hasEvent = events.some(
+        (event) => event.date.toDateString() === date.toDateString()
+      );
+      return hasEvent ? <span className="dot"></span> : null;
+    }
+    return null;
+  };
+
+  // Filter events happening this week, this month, and this semester
   const today = new Date();
   const thisWeekEvents = events.filter(
     (event) =>
       event.date >= today &&
       event.date <=
-        new Date(today.getFullYear(), today.getMonth(), today.getDate() + 7),
+        new Date(today.getFullYear(), today.getMonth(), today.getDate() + 7)
   );
   const thisMonthEvents = events.filter(
     (event) =>
       event.date.getFullYear() === today.getFullYear() &&
-      event.date.getMonth() === today.getMonth(),
+      event.date.getMonth() === today.getMonth()
   );
-  const thisYearEvents = events.filter(
-    (event) => event.date.getFullYear() === today.getFullYear(),
+  const thisSemesterEvents = events.filter(
+    (event) => getSemester(event.date) === getSemester(today)
   );
 
   return (
@@ -58,7 +78,11 @@ function CalendarPage() {
         <div>
           <h1 className="calendar-title">Calendar</h1>
           <div className="calendar">
-            <Calendar className="react-calendar" onClickDay={handleDateClick} />
+            <Calendar
+              className="react-calendar"
+              onClickDay={handleDateClick}
+              tileContent={tileContent}
+            />
           </div>
           {selectedDate && (
             <div className="events-container">
@@ -67,7 +91,7 @@ function CalendarPage() {
                 {events
                   .filter(
                     (event) =>
-                      event.date.toDateString() === selectedDate.toDateString(),
+                      event.date.toDateString() === selectedDate.toDateString()
                   )
                   .map((event, index) => (
                     <EventItem
@@ -108,9 +132,9 @@ function CalendarPage() {
               </li>
             ))}
           </ul>
-          <h3>This Year</h3>
+          <h3>This Semester</h3>
           <ul>
-            {thisYearEvents.map((event, index) => (
+            {thisSemesterEvents.map((event, index) => (
               <li key={index}>
                 {event.date.toLocaleDateString()}: {event.title}
               </li>
