@@ -4,10 +4,13 @@ import AddEventForm from "@/components/addEventForm/addEventForm";
 import EventItem from "@/components/EventItem/EventItem";
 import "./CalendarPage.css";
 import Navbar from "@/components/navbar/Navbar";
+import axios from "axios";
 
 interface Event {
-  date: Date;
+  date: string;
+  time: string;
   title: string;
+  component: boolean;
 }
 
 function getSemester(date: Date): string {
@@ -21,34 +24,39 @@ function getSemester(date: Date): string {
 }
 
 function CalendarPage() {
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedDate, setSelectedDate] = useState<string>("");
   const [events, setEvents] = useState<Event[]>([]);
 
   useEffect(() => {
-    // Fetch components from the API
-    const ucid = localStorage.getItem("ucid");
-    if (ucid) {
-      fetch(`/api/calendar?ucid=${ucid}`)
-        .then((res) => res.json())
-        .then((data) => {
-          const fetchedEvents = data.map((item: any) => ({
-            date: new Date(item.date),
-            title: `${item.course_name} - ${item.course_num}: ${item.name}`,
-          }));
-          setEvents(fetchedEvents);
-        })
-        .catch((error) => {
-          console.error("Error fetching events:", error);
+    const fetchData = async () => {
+      const ucid = localStorage.getItem("ucid");
+      const events_res = await axios.get(`/api/calendar?ucid=${ucid}`);
+
+      const events = events_res.data.map((item: any) => {
+        const date = new Date(item.date).toLocaleDateString();
+        const time = new Date(item.date).toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
         });
-    }
+        return {
+          date,
+          time,
+          title: `${item.course_name}${item.course_num} - ${item.name}`,
+          component: true,
+        };
+      });
+      setEvents(events);
+    };
+    fetchData();
   }, []);
 
   const handleDateClick = (date: Date) => {
-    setSelectedDate(date);
+    setSelectedDate(date.toLocaleDateString());
   };
 
-  const handleAddEvent = (date: Date, title: string) => {
-    setEvents([...events, { date, title }]);
+  const handleAddEvent = (date: string, title: string, time: string) => {
+    setEvents([...events, { date, time, title, component: false }]);
   };
 
   const handleUpdateEvent = (index: number, updatedEvent: Event) => {
@@ -64,9 +72,9 @@ function CalendarPage() {
   };
 
   const tileContent = ({ date, view }: { date: Date; view: string }) => {
-    if (view === 'month') {
+    if (view === "month") {
       const hasEvent = events.some(
-        (event) => event.date.toDateString() === date.toDateString()
+        (event) => event.date === date.toLocaleDateString(),
       );
       return hasEvent ? <span className="dot"></span> : null;
     }
@@ -76,17 +84,17 @@ function CalendarPage() {
   const today = new Date();
   const thisWeekEvents = events.filter(
     (event) =>
-      event.date >= today &&
-      event.date <=
-        new Date(today.getFullYear(), today.getMonth(), today.getDate() + 7)
+      new Date(event.date) >= today &&
+      new Date(event.date) <=
+        new Date(today.getFullYear(), today.getMonth(), today.getDate() + 7),
   );
   const thisMonthEvents = events.filter(
     (event) =>
-      event.date.getFullYear() === today.getFullYear() &&
-      event.date.getMonth() === today.getMonth()
+      new Date(event.date).getFullYear() === today.getFullYear() &&
+      new Date(event.date).getMonth() === today.getMonth(),
   );
   const thisSemesterEvents = events.filter(
-    (event) => getSemester(event.date) === getSemester(today)
+    (event) => getSemester(new Date(event.date)) === getSemester(today),
   );
 
   return (
@@ -104,22 +112,23 @@ function CalendarPage() {
           </div>
           {selectedDate && (
             <div className="events-container">
-              <h2>Events for {selectedDate.toLocaleDateString()}</h2>
+              <h2>Events for {selectedDate}</h2>
               <ul className="events-list">
                 {events
-                  .filter(
-                    (event) =>
-                      event.date.toDateString() === selectedDate.toDateString()
-                  )
+                  .filter((event) => event.date === selectedDate)
                   .map((event, index) => (
                     <EventItem
                       key={index}
                       date={event.date}
+                      time={event.time}
                       title={event.title}
-                      onUpdateEvent={(updatedDate, updatedTitle) =>
+                      component={event.component}
+                      onUpdateEvent={(updatedDate, updatedTitle, updatedTime) =>
                         handleUpdateEvent(index, {
                           date: updatedDate,
+                          time: updatedTime,
                           title: updatedTitle,
+                          component: false,
                         })
                       }
                       onDelete={() => handleDeleteEvent(index)}
@@ -138,7 +147,13 @@ function CalendarPage() {
           <ul>
             {thisWeekEvents.map((event, index) => (
               <li key={index}>
-                {event.date.toLocaleDateString()}: {event.title}
+                {new Date(event.date).toLocaleDateString("en-US", {
+                  timeZone: "UTC",
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                })}
+                : {event.title}
               </li>
             ))}
           </ul>
@@ -146,7 +161,13 @@ function CalendarPage() {
           <ul>
             {thisMonthEvents.map((event, index) => (
               <li key={index}>
-                {event.date.toLocaleDateString()}: {event.title}
+                {new Date(event.date).toLocaleDateString("en-US", {
+                  timeZone: "UTC",
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                })}
+                : {event.title}
               </li>
             ))}
           </ul>
@@ -154,7 +175,13 @@ function CalendarPage() {
           <ul>
             {thisSemesterEvents.map((event, index) => (
               <li key={index}>
-                {event.date.toLocaleDateString()}: {event.title}
+                {new Date(event.date).toLocaleDateString("en-US", {
+                  timeZone: "UTC",
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                })}
+                : {event.title}
               </li>
             ))}
           </ul>

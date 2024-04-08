@@ -50,8 +50,8 @@ function Grades() {
   const [ucid, _] = useState<number | null>(
     storedUcid ? parseInt(storedUcid) : null,
   );
-  const [lastComponentId, setLastComponentId] = useState<number>(() => {
-    const storedId = localStorage.getItem("lastComponentId");
+  const [lastId, setLastId] = useState<number>(() => {
+    const storedId = localStorage.getItem("lastId");
     return storedId ? parseInt(storedId) : 0;
   });
   const { course } = useParams();
@@ -130,7 +130,7 @@ function Grades() {
   // Function to handle adding a new component row
   const handleAddComponent = (componentType: string) => {
     const newComponent: Component = {
-      id: lastComponentId,
+      id: lastId,
       name: "",
       points: null,
       weight: null,
@@ -140,13 +140,13 @@ function Grades() {
       time: "",
     };
 
-    setLastComponentId((prevId) => prevId + 1);
+    setLastId((prevId) => prevId + 1);
     setComponents((prevComponents) => [...prevComponents, newComponent]);
   };
 
   useEffect(() => {
-    localStorage.setItem("lastComponentId", lastComponentId.toString());
-  }, [lastComponentId]);
+    localStorage.setItem("lastId", lastId.toString());
+  }, [lastId]);
 
   // Function to handle input change for component properties
   const handleInputChange = (
@@ -360,9 +360,7 @@ function Grades() {
                         : calculateWeight(assignment)}
                     </span>
                     <span>
-                      {new Date(
-                        assignment.date + "T00:00:00Z",
-                      ).toLocaleDateString("en-US", {
+                      {new Date(assignment.date).toLocaleDateString("en-US", {
                         timeZone: "UTC",
                         month: "long",
                         day: "numeric",
