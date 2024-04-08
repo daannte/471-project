@@ -1,6 +1,5 @@
 import express from "express";
 import db from "../db";
-import { RowDataPacket } from "mysql2";
 const router = express.Router();
 
 router.get("/", (req, res) => {
