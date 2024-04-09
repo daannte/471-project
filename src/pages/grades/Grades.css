@@ -66,3 +66,7 @@
   align-self: center;
   margin-bottom: 1rem;
 }
+
+.grade__submit-button {
+  margin-left: 8px;
+}

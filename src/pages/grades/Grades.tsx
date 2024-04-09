@@ -37,6 +37,7 @@ function Grades() {
   const [showStudentsMap, setShowStudentsMap] = useState<{
     [key: number]: boolean;
   }>({});
+  const [gradeNeeded, setGradeNeeded] = useState<number | null>(null);
   const [gradeScale, setGradeScale] = useState<GradeScale[]>([]);
   const [components, setComponents] = useState<Component[]>([]);
   const [role, setRole] = useState<string | null>(null);
@@ -290,7 +291,7 @@ function Grades() {
       totalWeight === 0
         ? ""
         : ((weightAchieved / totalWeight) * 100).toFixed(2);
-    return currentGrade;
+    return { currentGrade, weightAchieved, totalWeight };
   };
 
   const getLetterGrade = (percentage: number): string => {
@@ -307,6 +308,20 @@ function Grades() {
       [id]: !prevState[id],
     }));
   };
+
+  function handleGradeSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const grade = (event.target as any).elements.grade.value;
+    const totalWeight = calculateCurrentGrade().totalWeight;
+    const weightAchieved = calculateCurrentGrade().weightAchieved;
+
+    let gradeNeeded = ((grade - weightAchieved) / (100 - totalWeight)) * 100;
+
+    // round to 2 without rounding
+    gradeNeeded = Math.trunc(gradeNeeded * Math.pow(10, 2)) / Math.pow(10, 2);
+    setGradeNeeded(gradeNeeded);
+  }
 
   return (
     <>
@@ -628,10 +643,14 @@ function Grades() {
               <div className="long-row">
                 <span>Current Grade</span>
                 <span className="grade">
-                  {calculateCurrentGrade() ? calculateCurrentGrade() : 0}
+                  {calculateCurrentGrade().currentGrade
+                    ? calculateCurrentGrade().currentGrade
+                    : 0}
                 </span>
                 <span className="letter">
-                  {getLetterGrade(parseFloat(calculateCurrentGrade()))}
+                  {getLetterGrade(
+                    parseFloat(calculateCurrentGrade().currentGrade),
+                  )}
                 </span>
               </div>
             </div>
@@ -646,39 +665,23 @@ function Grades() {
             </div>
           </>
         )}
+        <div>
+          <h3>Wanted Grade Calculator</h3>
+          <form className="grade__form" onSubmit={handleGradeSubmit}>
+            <input
+              className="grade__input"
+              name="grade"
+              type="number"
+              autoComplete="off"
+              required
+            />
+            <button className="grade__submit-button" type="submit">
+              Calculate
+            </button>
+          </form>
+          {gradeNeeded !== null && <div>Grade Needed: {gradeNeeded}</div>}
+        </div>
       </div>
-      {/* <div className="student__table"> */}
-      {/*   {students.map((student, index) => ( */}
-      {/*     <div className="student__container" key={index}> */}
-      {/*       {student.student_id} */}
-      {/*       <div className="student__components"> */}
-      {/*         {components.map((component, index) => ( */}
-      {/* <div key={index} className="student__component"> */}
-      {/*   <div className="student__component-name"> */}
-      {/*     {component.name} */}
-      {/*   </div> */}
-      {/*   <div className="student__component-grade"> */}
-      {/*     { */}
-      {/*       grades.find( */}
-      {/*         (grade) => */}
-      {/*           component.id === grade.component_id && */}
-      {/*           grade.ucid === student.student_id, */}
-      {/*       )?.points */}
-      {/*     } */}
-      {/*   </div> */}
-      {/*   <button */}
-      {/*     onClick={() => */}
-      {/*       handleAddGrade(component, student.student_id) */}
-      {/*     } */}
-      {/*   > */}
-      {/*     Edit Grade */}
-      {/*   </button> */}
-      {/* </div> */}
-      {/*         ))} */}
-      {/*       </div> */}
-      {/*     </div> */}
-      {/*   ))} */}
-      {/* </div> */}
       <GradeModal
         isOpen={gradeModalOpen}
         onClose={() => setGradeModalOpen(false)}
