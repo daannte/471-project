@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import "./addEventForm.css";
 
-interface EventFormProps {
-  onAddEvent: (date: Date, title: string) => void;
+interface Props {
+  onAddEvent: (date: string, title: string, time: string) => void;
 }
 
-function AddEventForm({ onAddEvent }: EventFormProps) {
+function AddEventForm({ onAddEvent }: Props) {
   const [date, setDate] = useState<string>("");
   const [title, setTitle] = useState<string>("");
+  const [time, setTime] = useState<string>("");
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setDate(e.target.value);
@@ -17,18 +18,18 @@ function AddEventForm({ onAddEvent }: EventFormProps) {
     setTitle(e.target.value);
   };
 
+  const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTime(e.target.value);
+  };
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const day = new Date(date).getUTCDate();
-    const month = new Date(date).getUTCMonth();
-    const year = new Date(date).getUTCFullYear();
 
-    const selectedDate = new Date(year, month, day);
-    console.log(selectedDate);
-    if (date) {
-      onAddEvent(selectedDate, title);
+    if (date && title && time) {
+      onAddEvent(date, title, time);
       setDate("");
       setTitle("");
+      setTime("");
     }
   };
 
@@ -43,6 +44,10 @@ function AddEventForm({ onAddEvent }: EventFormProps) {
         <div>
           <label>Title:</label>
           <input type="text" value={title} onChange={handleTitleChange} />
+        </div>
+        <div>
+          <label>Event Time:</label>
+          <input type="time" value={time} onChange={handleTimeChange} />
         </div>
         <button type="submit">Add Event</button>
       </form>

@@ -16,6 +16,9 @@ CREATE TABLE user (
 
 INSERT INTO user (ucid, full_name, email, password) VALUES 
 (123456789, "Student Test", "student@test.com", "student123"),
+(30113704, "Zoe Kirsman", "zoe.kirsman@ucalgary.ca", "student123"),
+(30120778, "Dante Kirsman", "dante.kirsman@ucalgary.ca", "student123"),
+(30161346, "Arian Safari", "arian.safari@ucalgary.ca", "student123"),
 (987654321, "Professor Test", "professor@test.com", "professor123");
 
 -- Create the COURSE table
@@ -71,17 +74,44 @@ CREATE TABLE grade (
   FOREIGN KEY (component_id) REFERENCES component(id)
 );
 
--- Create the GRADEs_scale table
+-- Create the GRADESCALE table
 CREATE TABLE grade_scale (
-  letter VARCHAR(1) NOT NULL,
-  section_id INT NOT NULL, 
+  section_id INT NOT NULL,
+  letter VARCHAR(2) NOT NULL, 
   min_perc INT NOT NULL,
   max_perc INT NOT NULL,
-  PRIMARY KEY (letter),
+  PRIMARY KEY (letter, section_id),
   FOREIGN KEY (section_id) REFERENCES section(id)
 );
 
--- Create IN table
+INSERT INTO grade_scale (section_id, letter, min_perc, max_perc) VALUES 
+(1, 'A+', 95, 100),
+(1, 'A', 90, 95),
+(1, 'A-', 85, 90),
+(1, 'B+', 80, 85),
+(1, 'B', 75, 80),
+(1, 'B-', 70, 75),
+(1, 'C+', 65, 70),
+(1, 'C', 60, 65),
+(1, 'C-', 55, 60),
+(1, 'D+', 50, 55),
+(1, 'D', 45, 50),
+(1, 'F', 0, 45),
+(2, 'A+', 95, 100),
+(2, 'A', 90, 95),
+(2, 'A-', 86, 90),
+(2, 'B+', 82, 86),
+(2, 'B', 78, 82),
+(2, 'B-', 74, 78),
+(2, 'C+', 70, 74),
+(2, 'C', 66, 70),
+(2, 'C-', 62, 66),
+(2, 'D+', 58, 62),
+(2, 'D', 50, 58),
+(2, 'F', 0, 50);
+
+
+-- Create SinS table
 CREATE TABLE sins  (
   student_id INT NOT NULL,
   section_id INT NOT NULL,
@@ -92,4 +122,19 @@ CREATE TABLE sins  (
 
 INSERT INTO sins (student_id, section_id) VALUES 
 (123456789, 1),
-(123456789, 2);
+(123456789, 2),
+(30161346, 1),
+(30161346, 2),
+(30120778, 1),
+(30120778, 2),
+(30113704, 1);
+
+-- Create added events table
+CREATE TABLE addedEvent (
+  id INT NOT NULL,
+  student_id INT NOT NULL,
+  date DATETIME NOT NULL,
+  name VARCHAR(50) NOT NULL, 
+  PRIMARY KEY (id),
+  FOREIGN KEY (student_id) REFERENCES user(ucid)
+);

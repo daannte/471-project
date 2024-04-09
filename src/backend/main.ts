@@ -1,7 +1,17 @@
 import express, { Express } from "express";
 import cors from "cors";
 
-import { users, login, grades, components, courses, sections } from "./routes";
+import {
+  users,
+  login,
+  grades,
+  components,
+  courses,
+  sections,
+  calendar,
+  gradescale,
+  events,
+} from "./routes";
 
 // Setup express
 const app: Express = express();
@@ -15,6 +25,9 @@ app.use("/api/grades", grades);
 app.use("/api/components", components);
 app.use("/api/courses", courses);
 app.use("/api/sections", sections);
+app.use("/api/calendar", calendar);
+app.use("/api/gradescale", gradescale);
+app.use("/api/events", events);
 
 // For endpoints that don't exist
 app.use("/api/*", (_, res) => {
