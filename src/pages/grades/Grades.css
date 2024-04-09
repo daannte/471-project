@@ -6,7 +6,7 @@
 }
 
 .row {
-  width: 50%;
+  width: 80%;
 }
 
 .long-row {
@@ -15,9 +15,20 @@
   border: 1px solid #ccc;
   display: flex;
   align-items: center;
-  font-size: 16px;
   padding-left: 20px;
   padding-right: 5px;
+}
+
+.component__row {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid whitesmoke;
+}
+
+.component {
+  display: flex;
+  justify-content: space-between;
+  margin: 1rem;
 }
 
 .grade {
@@ -35,44 +46,23 @@
   justify-content: center;
 }
 
-.dynamic-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
 /* CSS for spans containing submitted text */
 .submitted span {
   flex: 1; /* Equal width distribution */
   margin: 0 5px; /* Adjust spacing between spans */
 }
 
-.student__container {
+.student {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  margin-top: 4rem;
-}
-
-.student__components {
-  background-color: white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  padding: 1rem;
-  margin-top: 1rem;
-}
-
-.student__component {
-  display: flex;
-}
-
-.student__component-name {
-  margin-right: 1rem;
+  margin: 1rem;
 }
 
 .student__component-grade {
-  margin-right: 1rem;
+  margin-inline: 1rem;
 }
 
+.show__student-button {
+  width: 8rem;
+  align-self: center;
+  margin-bottom: 1rem;
+}
