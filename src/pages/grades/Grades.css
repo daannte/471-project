@@ -15,6 +15,7 @@
   border: 1px solid #ccc;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding-left: 20px;
   padding-right: 5px;
 }
@@ -69,4 +70,16 @@
 
 .grade__submit-button {
   margin-left: 8px;
+}
+
+.outer {
+  width: 100%;
+}
+
+.component__admin {
+  display: flex;
+}
+
+.wanted {
+  margin-top: 2rem;
 }

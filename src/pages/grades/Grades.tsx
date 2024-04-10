@@ -323,6 +323,20 @@ function Grades() {
     setGradeNeeded(gradeNeeded);
   }
 
+  function calculatePercentage(component: Component) {
+    const componentGrade = grades.find(
+      (grade) => component.id === grade.component_id && ucid === grade.ucid,
+    )?.points;
+
+    if (componentGrade === undefined || component.points === null) {
+      return <span>-%</span>;
+    }
+    const calcGrade = (componentGrade / component.points) * 100;
+    const grade = calcGrade % 1 !== 0 ? calcGrade.toFixed(2) : calcGrade;
+
+    return <span>{grade}%</span>;
+  }
+
   return (
     <>
       <Navbar />
@@ -330,15 +344,23 @@ function Grades() {
         {/* Assignments Section */}
         <div className="row">
           <div className="long-row">
-            <span>Assignments</span>
-            {role === "admin" && (
-              <button
-                className="add"
-                onClick={() => handleAddComponent("assignment")}
-              >
-                +
-              </button>
-            )}
+            <div className="outer">
+              <div className="component__admin">
+                <span>Assignments</span>
+                {role === "admin" && (
+                  <button
+                    className="add"
+                    onClick={() => handleAddComponent("assignment")}
+                  >
+                    +
+                  </button>
+                )}
+              </div>
+            </div>
+            <div className="outer">Points</div>
+            <div className="outer">Weight</div>
+            {role !== "admin" && <div className="outer">Percentage</div>}
+            <div className="outer">Due Date</div>
           </div>
         </div>
         {/* Render assignment rows */}
@@ -350,8 +372,8 @@ function Grades() {
                 <div className="component">
                   {assignment.submitted ? (
                     <>
-                      <span>{assignment.name}</span>
-                      <span>
+                      <div className="outer">{assignment.name}</div>
+                      <div className="outer">
                         {role !== "admin" &&
                           (grades.find(
                             (grade) =>
@@ -367,21 +389,25 @@ function Grades() {
                               } / `
                             : "- / ")}
                         {assignment.points}
-                      </span>
-                      <span>
+                      </div>
+                      <div className="outer">
                         {role === "admin"
                           ? assignment.weight
                           : calculateWeight(assignment)}
-                      </span>
-                      <span>
+                      </div>
+                      {role !== "admin" && (
+                        <div className="outer">
+                          {calculatePercentage(assignment)}
+                        </div>
+                      )}
+                      <div className="outer">
                         {new Date(assignment.date).toLocaleDateString("en-US", {
                           timeZone: "UTC",
                           month: "long",
                           day: "numeric",
                           year: "numeric",
                         })}
-                      </span>
-                      <span>
+                        ,{" "}
                         {new Date(
                           "1970-01-01T" + assignment.time + "Z",
                         ).toLocaleTimeString("en-US", {
@@ -390,7 +416,7 @@ function Grades() {
                           hour: "numeric",
                           minute: "numeric",
                         })}
-                      </span>
+                      </div>
                       {role === "admin" && (
                         <button onClick={() => handleEdit(assignment.id)}>
                           Edit
@@ -491,15 +517,23 @@ function Grades() {
         {/* Exams Section */}
         <div className="row">
           <div className="long-row">
-            <span>Exams</span>
-            {role === "admin" && (
-              <button
-                className="add"
-                onClick={() => handleAddComponent("exam")}
-              >
-                +
-              </button>
-            )}
+            <div className="outer">
+              <div className="component__admin">
+                <span>Exams</span>
+                {role === "admin" && (
+                  <button
+                    className="add"
+                    onClick={() => handleAddComponent("exam")}
+                  >
+                    +
+                  </button>
+                )}
+              </div>
+            </div>
+            <div className="outer">Points</div>
+            <div className="outer">Weight</div>
+            {role !== "admin" && <div className="outer">Percentage</div>}
+            <div className="outer">Due Date</div>
           </div>
         </div>
         {/* Render exam rows */}
@@ -511,8 +545,8 @@ function Grades() {
                 <div className="component">
                   {exam.submitted ? (
                     <>
-                      <span>{exam.name}</span>
-                      <span>
+                      <div className="outer">{exam.name}</div>
+                      <div className="outer">
                         {role !== "admin" &&
                           (grades.find(
                             (grade) =>
@@ -528,19 +562,21 @@ function Grades() {
                               } / `
                             : "- / ")}
                         {exam.points}
-                      </span>
-                      <span>
+                      </div>
+                      <div className="outer">
                         {role === "admin" ? exam.weight : calculateWeight(exam)}
-                      </span>
-                      <span>
+                      </div>
+                      {role !== "admin" && (
+                        <div className="outer">{calculatePercentage(exam)}</div>
+                      )}
+                      <div className="outer">
                         {new Date(exam.date).toLocaleDateString("en-US", {
                           timeZone: "UTC",
                           month: "long",
                           day: "numeric",
                           year: "numeric",
                         })}
-                      </span>
-                      <span>
+                        ,{" "}
                         {new Date(
                           "1970-01-01T" + exam.time + "Z",
                         ).toLocaleTimeString("en-US", {
@@ -549,7 +585,7 @@ function Grades() {
                           hour: "numeric",
                           minute: "numeric",
                         })}
-                      </span>
+                      </div>
                       {role === "admin" && (
                         <button onClick={() => handleEdit(exam.id)}>
                           Edit
@@ -665,22 +701,24 @@ function Grades() {
             </div>
           </>
         )}
-        <div>
-          <h3>Wanted Grade Calculator</h3>
-          <form className="grade__form" onSubmit={handleGradeSubmit}>
-            <input
-              className="grade__input"
-              name="grade"
-              type="number"
-              autoComplete="off"
-              required
-            />
-            <button className="grade__submit-button" type="submit">
-              Calculate
-            </button>
-          </form>
-          {gradeNeeded !== null && <div>Grade Needed: {gradeNeeded}</div>}
-        </div>
+        {role !== "admin" && (
+          <div className="wanted">
+            <h3>Wanted Grade Calculator</h3>
+            <form className="grade__form" onSubmit={handleGradeSubmit}>
+              <input
+                className="grade__input"
+                name="grade"
+                type="number"
+                autoComplete="off"
+                required
+              />
+              <button className="grade__submit-button" type="submit">
+                Calculate
+              </button>
+            </form>
+            {gradeNeeded !== null && <div>Grade Needed: {gradeNeeded}</div>}
+          </div>
+        )}
       </div>
       <GradeModal
         isOpen={gradeModalOpen}
