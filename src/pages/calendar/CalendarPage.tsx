@@ -96,7 +96,7 @@ function CalendarPage() {
         ...events,
         {
           id: lastId,
-          date: new Date(date).toLocaleDateString(),
+          date: new Date(date + "T12:00:00Z").toLocaleDateString(),
           time,
           title,
           component: false,

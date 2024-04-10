@@ -25,6 +25,9 @@ function EventItem({
 
   const handleEdit = () => {
     setShowEditForm(true);
+    setEditedTitle(title);
+    setEditedDate(date);
+    setEditedTime(time);
   };
 
   const handleCancelEdit = () => {
@@ -36,6 +39,14 @@ function EventItem({
       onUpdateEvent(editedDate, editedTitle, editedTime);
       setShowEditForm(false);
     }
+  };
+
+  const handleDelete = () => {
+    onDelete();
+    setShowEditForm(false);
+    setEditedTitle("");
+    setEditedDate("");
+    setEditedTime("");
   };
 
   return (
@@ -76,7 +87,7 @@ function EventItem({
           />
           <button onClick={handleSaveEdit}>Save</button>
           <button onClick={handleCancelEdit}>Cancel</button>
-          <button onClick={onDelete}>Delete Event</button>
+          <button onClick={handleDelete}>Delete Event</button>
         </div>
       )}
     </div>
