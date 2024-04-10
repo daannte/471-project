@@ -94,7 +94,13 @@ function CalendarPage() {
     if (res.data.success) {
       setEvents([
         ...events,
-        { id: lastId, date, time, title, component: false },
+        {
+          id: lastId,
+          date: new Date(date).toLocaleDateString(),
+          time,
+          title,
+          component: false,
+        },
       ]);
       setLastId((prevId) => prevId + 1);
     }
