@@ -34,6 +34,10 @@ interface GradeScale {
 }
 
 function Grades() {
+  const [showStudentsMap, setShowStudentsMap] = useState<{
+    [key: number]: boolean;
+  }>({});
+  const [gradeNeeded, setGradeNeeded] = useState<number | null>(null);
   const [gradeScale, setGradeScale] = useState<GradeScale[]>([]);
   const [components, setComponents] = useState<Component[]>([]);
   const [role, setRole] = useState<string | null>(null);
@@ -287,7 +291,7 @@ function Grades() {
       totalWeight === 0
         ? ""
         : ((weightAchieved / totalWeight) * 100).toFixed(2);
-    return currentGrade;
+    return { currentGrade, weightAchieved, totalWeight };
   };
 
   const getLetterGrade = (percentage: number): string => {
@@ -298,6 +302,41 @@ function Grades() {
     return grade ? grade.letter : "";
   };
 
+  const toggleShowStudents = (id: number) => {
+    setShowStudentsMap((prevState) => ({
+      ...prevState,
+      [id]: !prevState[id],
+    }));
+  };
+
+  function handleGradeSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const grade = (event.target as any).elements.grade.value;
+    const totalWeight = calculateCurrentGrade().totalWeight;
+    const weightAchieved = calculateCurrentGrade().weightAchieved;
+
+    let gradeNeeded = ((grade - weightAchieved) / (100 - totalWeight)) * 100;
+
+    // round to 2 without rounding
+    gradeNeeded = Math.trunc(gradeNeeded * Math.pow(10, 2)) / Math.pow(10, 2);
+    setGradeNeeded(gradeNeeded);
+  }
+
+  function calculatePercentage(component: Component) {
+    const componentGrade = grades.find(
+      (grade) => component.id === grade.component_id && ucid === grade.ucid,
+    )?.points;
+
+    if (componentGrade === undefined || component.points === null) {
+      return <span>-%</span>;
+    }
+    const calcGrade = (componentGrade / component.points) * 100;
+    const grade = calcGrade % 1 !== 0 ? calcGrade.toFixed(2) : calcGrade;
+
+    return <span>{grade}%</span>;
+  }
+
   return (
     <>
       <Navbar />
@@ -305,249 +344,331 @@ function Grades() {
         {/* Assignments Section */}
         <div className="row">
           <div className="long-row">
-            <span>Assignments</span>
-            {role === "admin" && (
-              <button
-                className="add"
-                onClick={() => handleAddComponent("assignment")}
-              >
-                +
-              </button>
-            )}
+            <div className="outer">
+              <div className="component__admin">
+                <span>Assignments</span>
+                {role === "admin" && (
+                  <button
+                    className="add"
+                    onClick={() => handleAddComponent("assignment")}
+                  >
+                    +
+                  </button>
+                )}
+              </div>
+            </div>
+            <div className="outer">Points</div>
+            <div className="outer">Weight</div>
+            {role !== "admin" && <div className="outer">Percentage</div>}
+            <div className="outer">Due Date</div>
           </div>
         </div>
         {/* Render assignment rows */}
         {components
           .filter((component) => component.type === "assignment")
           .map((assignment, index) => (
-            <div
-              className="row"
-              key={index}
-              style={{ backgroundColor: "white" }}
-            >
-              <div
-                className={
-                  assignment.submitted ? "long-row submitted" : "long-row"
-                }
-                style={{ backgroundColor: "white" }}
-              >
-                {assignment.submitted ? (
-                  <>
-                    <span>{assignment.name}</span>
-                    <span>
-                      {role !== "admin" &&
-                        (grades.find(
-                          (grade) =>
-                            assignment?.id === grade.component_id &&
-                            ucid === grade.ucid,
-                        )?.points !== undefined
-                          ? `${
-                              grades.find(
-                                (grade) =>
-                                  assignment?.id === grade.component_id &&
-                                  ucid === grade.ucid,
-                              )?.points
-                            } / `
-                          : "- / ")}
-                      {assignment.points}
-                    </span>
-                    <span>
-                      {role === "admin"
-                        ? assignment.weight
-                        : calculateWeight(assignment)}
-                    </span>
-                    <span>
-                      {new Date(assignment.date).toLocaleDateString("en-US", {
-                        timeZone: "UTC",
-                        month: "long",
-                        day: "numeric",
-                        year: "numeric",
-                      })}
-                    </span>
-                    <span>
-                      {new Date(
-                        "1970-01-01T" + assignment.time + "Z",
-                      ).toLocaleTimeString("en-US", {
-                        timeZone: "UTC",
-                        hour12: true,
-                        hour: "numeric",
-                        minute: "numeric",
-                      })}
-                    </span>
-                    {role === "admin" && (
-                      <button onClick={() => handleEdit(assignment.id)}>
-                        Edit
+            <div className="row" key={index}>
+              <div className="component__row">
+                <div className="component">
+                  {assignment.submitted ? (
+                    <>
+                      <div className="outer">{assignment.name}</div>
+                      <div className="outer">
+                        {role !== "admin" &&
+                          (grades.find(
+                            (grade) =>
+                              assignment?.id === grade.component_id &&
+                              ucid === grade.ucid,
+                          )?.points !== undefined
+                            ? `${
+                                grades.find(
+                                  (grade) =>
+                                    assignment?.id === grade.component_id &&
+                                    ucid === grade.ucid,
+                                )?.points
+                              } / `
+                            : "- / ")}
+                        {assignment.points}
+                      </div>
+                      <div className="outer">
+                        {role === "admin"
+                          ? assignment.weight
+                          : calculateWeight(assignment)}
+                      </div>
+                      {role !== "admin" && (
+                        <div className="outer">
+                          {calculatePercentage(assignment)}
+                        </div>
+                      )}
+                      <div className="outer">
+                        {new Date(assignment.date).toLocaleDateString("en-US", {
+                          timeZone: "UTC",
+                          month: "long",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
+                        ,{" "}
+                        {new Date(
+                          "1970-01-01T" + assignment.time + "Z",
+                        ).toLocaleTimeString("en-US", {
+                          timeZone: "UTC",
+                          hour12: true,
+                          hour: "numeric",
+                          minute: "numeric",
+                        })}
+                      </div>
+                      {role === "admin" && (
+                        <button onClick={() => handleEdit(assignment.id)}>
+                          Edit
+                        </button>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <input
+                        type="text"
+                        value={assignment.name}
+                        onChange={(e) =>
+                          handleInputChange(e, assignment.id, "name")
+                        }
+                        placeholder="Name"
+                      />
+                      <input
+                        type="text"
+                        value={
+                          assignment.points ? assignment.points.toString() : ""
+                        }
+                        onChange={(e) =>
+                          handleInputChange(e, assignment.id, "points")
+                        }
+                        placeholder="Points"
+                      />
+                      <input
+                        type="text"
+                        value={
+                          assignment.weight ? assignment.weight.toString() : ""
+                        }
+                        onChange={(e) =>
+                          handleInputChange(e, assignment.id, "weight")
+                        }
+                        placeholder="Weight"
+                      />
+                      <input
+                        type="date"
+                        value={assignment.date}
+                        onChange={(e) =>
+                          handleInputChange(e, assignment.id, "date")
+                        }
+                      />
+                      <input
+                        type="time"
+                        value={assignment.time}
+                        onChange={(e) =>
+                          handleInputChange(e, assignment.id, "time")
+                        }
+                      />
+                      <button onClick={() => handleSubmit(assignment.id)}>
+                        Submit
                       </button>
-                    )}
-                  </>
-                ) : (
-                  <>
-                    <input
-                      type="text"
-                      value={assignment.name}
-                      onChange={(e) =>
-                        handleInputChange(e, assignment.id, "name")
-                      }
-                      placeholder="Name"
-                    />
-                    <input
-                      type="text"
-                      value={
-                        assignment.points ? assignment.points.toString() : ""
-                      }
-                      onChange={(e) =>
-                        handleInputChange(e, assignment.id, "points")
-                      }
-                      placeholder="Points"
-                    />
-                    <input
-                      type="text"
-                      value={
-                        assignment.weight ? assignment.weight.toString() : ""
-                      }
-                      onChange={(e) =>
-                        handleInputChange(e, assignment.id, "weight")
-                      }
-                      placeholder="Weight"
-                    />
-                    <input
-                      type="date"
-                      value={assignment.date}
-                      onChange={(e) =>
-                        handleInputChange(e, assignment.id, "date")
-                      }
-                    />
-                    <input
-                      type="time"
-                      value={assignment.time}
-                      onChange={(e) =>
-                        handleInputChange(e, assignment.id, "time")
-                      }
-                    />
-                    <button onClick={() => handleSubmit(assignment.id)}>
-                      Submit
-                    </button>
-                    <button onClick={() => handleDelete(assignment.id)}>
-                      Delete
-                    </button>
-                  </>
+                      <button onClick={() => handleDelete(assignment.id)}>
+                        Delete
+                      </button>
+                    </>
+                  )}
+                </div>
+                {role === "admin" && (
+                  <button
+                    className="show__student-button"
+                    onClick={() => toggleShowStudents(assignment.id)}
+                  >
+                    {showStudentsMap[assignment.id]
+                      ? `Hide Students`
+                      : "Show Students"}
+                  </button>
+                )}
+                {showStudentsMap[assignment.id] && (
+                  <div className="student__table">
+                    {students.map((student, index) => (
+                      <div key={index} className="student">
+                        {student.student_id}
+                        <div className="student__component-grade">
+                          {
+                            grades.find(
+                              (grade) =>
+                                assignment.id === grade.component_id &&
+                                grade.ucid === student.student_id,
+                            )?.points
+                          }
+                        </div>
+                        <button
+                          onClick={() =>
+                            handleAddGrade(assignment, student.student_id)
+                          }
+                        >
+                          Edit Grade
+                        </button>
+                      </div>
+                    ))}
+                  </div>
                 )}
               </div>
             </div>
           ))}
-
         {/* Exams Section */}
         <div className="row">
           <div className="long-row">
-            <span>Exams</span>
-            {role === "admin" && (
-              <button
-                className="add"
-                onClick={() => handleAddComponent("exam")}
-              >
-                +
-              </button>
-            )}
+            <div className="outer">
+              <div className="component__admin">
+                <span>Exams</span>
+                {role === "admin" && (
+                  <button
+                    className="add"
+                    onClick={() => handleAddComponent("exam")}
+                  >
+                    +
+                  </button>
+                )}
+              </div>
+            </div>
+            <div className="outer">Points</div>
+            <div className="outer">Weight</div>
+            {role !== "admin" && <div className="outer">Percentage</div>}
+            <div className="outer">Due Date</div>
           </div>
         </div>
         {/* Render exam rows */}
         {components
           .filter((component) => component.type === "exam")
           .map((exam, index) => (
-            <div
-              className="row"
-              key={index}
-              style={{ backgroundColor: "white" }}
-            >
-              <div
-                className={exam.submitted ? "long-row submitted" : "long-row"}
-                style={{ backgroundColor: "white" }}
-              >
-                {exam.submitted ? (
-                  <>
-                    <span>{exam.name}</span>
-                    <span>
-                      {role !== "admin" &&
-                        (grades.find(
-                          (grade) =>
-                            exam?.id === grade.component_id &&
-                            ucid === grade.ucid,
-                        )?.points !== undefined
-                          ? `${
-                              grades.find(
-                                (grade) =>
-                                  exam?.id === grade.component_id &&
-                                  ucid === grade.ucid,
-                              )?.points
-                            } / `
-                          : "- / ")}
-                      {exam.points}
-                    </span>
-                    <span>
-                      {role === "admin" ? exam.weight : calculateWeight(exam)}
-                    </span>
-                    <span>
-                      {new Date(exam.date + "T00:00:00Z").toLocaleDateString(
-                        "en-US",
-                        {
+            <div className="row" key={index}>
+              <div className="component__row">
+                <div className="component">
+                  {exam.submitted ? (
+                    <>
+                      <div className="outer">{exam.name}</div>
+                      <div className="outer">
+                        {role !== "admin" &&
+                          (grades.find(
+                            (grade) =>
+                              exam?.id === grade.component_id &&
+                              ucid === grade.ucid,
+                          )?.points !== undefined
+                            ? `${
+                                grades.find(
+                                  (grade) =>
+                                    exam?.id === grade.component_id &&
+                                    ucid === grade.ucid,
+                                )?.points
+                              } / `
+                            : "- / ")}
+                        {exam.points}
+                      </div>
+                      <div className="outer">
+                        {role === "admin" ? exam.weight : calculateWeight(exam)}
+                      </div>
+                      {role !== "admin" && (
+                        <div className="outer">{calculatePercentage(exam)}</div>
+                      )}
+                      <div className="outer">
+                        {new Date(exam.date).toLocaleDateString("en-US", {
                           timeZone: "UTC",
                           month: "long",
                           day: "numeric",
                           year: "numeric",
-                        },
+                        })}
+                        ,{" "}
+                        {new Date(
+                          "1970-01-01T" + exam.time + "Z",
+                        ).toLocaleTimeString("en-US", {
+                          timeZone: "UTC",
+                          hour12: true,
+                          hour: "numeric",
+                          minute: "numeric",
+                        })}
+                      </div>
+                      {role === "admin" && (
+                        <button onClick={() => handleEdit(exam.id)}>
+                          Edit
+                        </button>
                       )}
-                    </span>
-                    <span>
-                      {new Date(
-                        "1970-01-01T" + exam.time + "Z",
-                      ).toLocaleTimeString("en-US", {
-                        timeZone: "UTC",
-                        hour12: true,
-                        hour: "numeric",
-                        minute: "numeric",
-                      })}
-                    </span>
-                    {role === "admin" && (
-                      <button onClick={() => handleEdit(exam.id)}>Edit</button>
-                    )}
-                  </>
-                ) : (
-                  <>
-                    <input
-                      type="text"
-                      value={exam.name}
-                      onChange={(e) => handleInputChange(e, exam.id, "name")}
-                      placeholder="Name"
-                    />
-                    <input
-                      type="text"
-                      value={exam.points ? exam.points.toString() : ""}
-                      onChange={(e) => handleInputChange(e, exam.id, "points")}
-                      placeholder="Points"
-                    />
-                    <input
-                      type="text"
-                      value={exam.weight ? exam.weight.toString() : ""}
-                      onChange={(e) => handleInputChange(e, exam.id, "weight")}
-                      placeholder="Weight"
-                    />
-                    <input
-                      type="date"
-                      value={exam.date}
-                      onChange={(e) => handleInputChange(e, exam.id, "date")}
-                    />
-                    <input
-                      type="time"
-                      value={exam.time}
-                      onChange={(e) => handleInputChange(e, exam.id, "time")}
-                    />
-                    <button onClick={() => handleSubmit(exam.id)}>
-                      Submit
-                    </button>
-                    <button onClick={() => handleDelete(exam.id)}>
-                      Delete
-                    </button>
-                  </>
+                    </>
+                  ) : (
+                    <>
+                      <input
+                        type="text"
+                        value={exam.name}
+                        onChange={(e) => handleInputChange(e, exam.id, "name")}
+                        placeholder="Name"
+                      />
+                      <input
+                        type="text"
+                        value={exam.points ? exam.points.toString() : ""}
+                        onChange={(e) =>
+                          handleInputChange(e, exam.id, "points")
+                        }
+                        placeholder="Points"
+                      />
+                      <input
+                        type="text"
+                        value={exam.weight ? exam.weight.toString() : ""}
+                        onChange={(e) =>
+                          handleInputChange(e, exam.id, "weight")
+                        }
+                        placeholder="Weight"
+                      />
+                      <input
+                        type="date"
+                        value={exam.date}
+                        onChange={(e) => handleInputChange(e, exam.id, "date")}
+                      />
+                      <input
+                        type="time"
+                        value={exam.time}
+                        onChange={(e) => handleInputChange(e, exam.id, "time")}
+                      />
+                      <button onClick={() => handleSubmit(exam.id)}>
+                        Submit
+                      </button>
+                      <button onClick={() => handleDelete(exam.id)}>
+                        Delete
+                      </button>
+                    </>
+                  )}
+                </div>
+                {role === "admin" && (
+                  <button
+                    className="show__student-button"
+                    onClick={() => toggleShowStudents(exam.id)}
+                  >
+                    {showStudentsMap[exam.id]
+                      ? `Hide Students`
+                      : "Show Students"}
+                  </button>
+                )}
+                {showStudentsMap[exam.id] && (
+                  <div className="student__table">
+                    {students.map((student, index) => (
+                      <div key={index} className="student">
+                        {student.student_id}
+                        <div className="student__component-grade">
+                          {
+                            grades.find(
+                              (grade) =>
+                                exam.id === grade.component_id &&
+                                grade.ucid === student.student_id,
+                            )?.points
+                          }
+                        </div>
+                        <button
+                          onClick={() =>
+                            handleAddGrade(exam, student.student_id)
+                          }
+                        >
+                          Edit Grade
+                        </button>
+                      </div>
+                    ))}
+                  </div>
                 )}
               </div>
             </div>
@@ -558,10 +679,14 @@ function Grades() {
               <div className="long-row">
                 <span>Current Grade</span>
                 <span className="grade">
-                  {calculateCurrentGrade() ? calculateCurrentGrade() : 0}
+                  {calculateCurrentGrade().currentGrade
+                    ? calculateCurrentGrade().currentGrade
+                    : 0}
                 </span>
                 <span className="letter">
-                  {getLetterGrade(parseFloat(calculateCurrentGrade()))}
+                  {getLetterGrade(
+                    parseFloat(calculateCurrentGrade().currentGrade),
+                  )}
                 </span>
               </div>
             </div>
@@ -576,38 +701,24 @@ function Grades() {
             </div>
           </>
         )}
-      </div>
-      <div className="student__table">
-        {students.map((student, index) => (
-          <div className="student__container" key={index}>
-            {student.student_id}
-            <div className="student__components">
-              {components.map((component, index) => (
-                <div key={index} className="student__component">
-                  <div className="student__component-name">
-                    {component.name}
-                  </div>
-                  <div className="student__component-grade">
-                    {
-                      grades.find(
-                        (grade) =>
-                          component.id === grade.component_id &&
-                          grade.ucid === student.student_id,
-                      )?.points
-                    }
-                  </div>
-                  <button
-                    onClick={() =>
-                      handleAddGrade(component, student.student_id)
-                    }
-                  >
-                    Edit Grade
-                  </button>
-                </div>
-              ))}
-            </div>
+        {role !== "admin" && (
+          <div className="wanted">
+            <h3>Wanted Grade Calculator</h3>
+            <form className="grade__form" onSubmit={handleGradeSubmit}>
+              <input
+                className="grade__input"
+                name="grade"
+                type="number"
+                autoComplete="off"
+                required
+              />
+              <button className="grade__submit-button" type="submit">
+                Calculate
+              </button>
+            </form>
+            {gradeNeeded !== null && <div>Grade Needed: {gradeNeeded}</div>}
           </div>
-        ))}
+        )}
       </div>
       <GradeModal
         isOpen={gradeModalOpen}
