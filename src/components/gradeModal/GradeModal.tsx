@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./GradeModal.css";
 import axios from "axios";
 
@@ -36,7 +36,14 @@ const GradeModal = ({
   setGrades,
   grades,
 }: Props) => {
+  const componentGrade = grades.find(
+    (grade) => grade.component_id === component?.id && ucid === grade.ucid,
+  );
   const [grade, setGrade] = useState<number | null>(null);
+
+  useEffect(() => {
+    setGrade(componentGrade?.points ?? null);
+  }, [componentGrade]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setGrade(Number(e.target.value));
@@ -71,7 +78,7 @@ const GradeModal = ({
         if (res1.data.success) {
           setGrades((prevGrades) => {
             const updatedGrades = prevGrades.map((g) => {
-              if (g.component_id === component?.id) {
+              if (g.component_id === component?.id && ucid === g.ucid) {
                 return {
                   ...g,
                   points: grade,
@@ -98,8 +105,11 @@ const GradeModal = ({
               value={grade !== null ? String(grade) : ""}
               onChange={handleChange}
               placeholder={
-                grades.find((grade) => grade.component_id === component?.id)
-                  ? `Points: ${grades.find((grade) => grade.component_id === component?.id)?.points}`
+                grades.find(
+                  (grade) =>
+                    grade.component_id === component?.id && ucid === grade.ucid,
+                )
+                  ? `Points: ${grades.find((grade) => grade.component_id === component?.id && ucid === grade.ucid)?.points}`
                   : "Enter grade"
               }
             />
